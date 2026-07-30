@@ -3,135 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Radio - Live Stream</title>
+    <title>CloudRadio - Multi-Stream Internet Radio</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- FontAwesome for Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/index.css" rel="stylesheet">
     <style>
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            font-family: system-ui, -apple-system, sans-serif;
-        }
-        .navbar-brand {
-            font-weight: 700;
-            letter-spacing: 1px;
-        }
-        .hero-section {
-            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
-            border-bottom: 1px solid #334155;
-        }
-        .card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
-            color: #f8fafc;
-        }
-        .card-header {
-            background-color: #0f172a;
-            border-bottom: 1px solid #334155;
-            font-weight: 600;
-        }
-        .btn-primary {
-            background-color: #6366f1;
-            border-color: #6366f1;
-        }
-        .btn-primary:hover {
-            background-color: #4f46e5;
-            border-color: #4f46e5;
-        }
-        iframe {
-            border: none;
-            border-radius: 8px;
-            background: transparent;
-        }
+        body { background-color: #121212; color: #e0e0e0; }
+        .navbar { background-color: #1f1f1f; }
+        .card { background-color: #1f1f1f; border: 1px solid #2d2d2d; color: #fff; }
+        .nav-tabs .nav-link { color: #aaa; border: none; }
+        .nav-tabs .nav-link.active { background-color: #2d2d2d; color: #fff; border-bottom: 3px solid #0d6efd; }
+        .widget-container iframe { width: 100%; border: 0; border-radius: 8px; background: transparent; }
+        .form-control { background-color: #2d2d2d; border: 1px solid #444; color: #fff; }
+        .form-control:focus { background-color: #333; border-color: #0d6efd; color: #fff; box-shadow: none; }
     </style>
 </head>
 <body>
 
     <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top shadow">
         <div class="container">
-            <a class="navbar-brand text-info" href="#"><i class="fa-solid fa-radio me-2"></i>CLOUD RADIO</a>
+            <a class="navbar-brand fw-bold text-primary" href="#">🎵 CloudRadio</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-index"></span>
+                <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#listen"><i class="fa-solid fa-play me-1"></i> Listen Live</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#request"><i class="fa-solid fa-music me-1"></i> Request Song</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#history"><i class="fa-solid fa-history me-1"></i> History</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#streams">Our Streams</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact Us</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Hero / Now Playing Section -->
-    <header id="listen" class="hero-section py-5 text-center">
+    <!-- Hero Section -->
+    <header class="py-5 text-center text-white bg-dark mb-5 border-bottom border-secondary">
         <div class="container py-4">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <span class="badge bg-danger mb-3 px-3 py-2 text-uppercase tracking-wider"><i class="fa-solid fa-circle-dot me-1 fa-pulse"></i> Live Broadcast</span>
-                    <h1 class="display-4 fw-bold mb-4">Welcome to Cloud Radio</h1>
-                    
-                    <!-- AzuraCast Now Playing Player Widget -->
-                    <div class="p-3 bg-dark bg-opacity-50 rounded-3 shadow border border-secondary mb-4">
-                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
-                        <iframe src="https://az1.cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 150px; border: 0;"></iframe>
-                    </div>
-                    
-                    <p class="lead text-muted">Streaming the finest beats 24/7 directly from the cloud.</p>
-                </div>
-            </div>
+            <h1 class="display-4 fw-bold">Live From The Cloud</h1>
+            <p class="lead text-muted">Select a stream, request songs, and tune into your favourite beats 24/7.</p>
         </div>
     </header>
 
-    <!-- Main Content Section -->
-    <main class="container my-5">
+    <!-- Streams Section -->
+    <main class="container mb-5" id="streams">
+        <h2 class="text-center fw-bold mb-4">🎵 Choose Your Vibe</h2>
         <div class="row g-4">
             
-            <!-- Song Request Widget Column -->
-            <section id="request" class="col-lg-7">
+            <!-- Stream 1 Card -->
+            <div class="col-lg-6">
                 <div class="card h-100 shadow-sm">
-                    <div class="card-header text-info d-flex align-items-center">
-                        <i class="fa-solid fa-microphone-lines me-2"></i>
-                        <h5 class="mb-0">Request a Song</h5>
+                    <div class="card-header bg-dark border-secondary">
+                        <h4 class="mb-0 text-primary">🚀 Main Mix</h4>
+                        <small class="text-muted">Pop, Rock, and Top 40 Hits</small>
                     </div>
-                    <div class="card-body p-0">
-                        <!-- AzuraCast Song Request Widget -->
-                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
-                        <iframe src="https://az1.cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed-requests?theme=dark" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 500px; border: 0;"></iframe>
+                    <div class="card-body">
+                        <!-- AzuraCast Now Playing Player Embed -->
+                        <div class="widget-container mb-4">
+                            <iframe src="https://demo.azuracast.com/public/azuraradio/embed" height="150" loading="lazy"></iframe>
+                        </div>
+                        
+                        <!-- Tabs for Interaction -->
+                        <ul class="nav nav-tabs id="stream1Tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="s1-request-tab" data-bs-toggle="tab" data-bs-target="#s1-request" type="button" role="tab">Request Song</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="s1-history-tab" data-bs-toggle="tab" data-bs-target="#s1-history" type="button" role="tab">History</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content bg-dark p-3 rounded-bottom border border-top-0 border-secondary">
+                            <!-- Song Request Tab -->
+                            <div class="tab-pane fade show active" id="s1-request" role="tabpanel">
+                                <div class="widget-container">
+                                    <iframe src="https://demo.azuracast.com/public/azuraradio/request" height="350" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                            <!-- Song History Tab -->
+                            <div class="tab-pane fade" id="s1-history" role="tabpanel">
+                                <div class="widget-container">
+                                    <iframe src="https://demo.azuracast.com/public/azuraradio/history" height="350" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Song History Widget Column -->
-            <section id="history" class="col-lg-5">
+            <!-- Stream 2 Card -->
+            <div class="col-lg-6">
                 <div class="card h-100 shadow-sm">
-                    <div class="card-header text-warning d-flex align-items-center">
-                        <i class="fa-solid fa-clock-rotate-left me-2"></i>
-                        <h5 class="mb-0">Recently Played</h5>
+                    <div class="card-header bg-dark border-secondary">
+                        <h4 class="mb-0 text-success">🌴 Chill & Lofi Beats</h4>
+                        <small class="text-muted">Relaxing background tracks for study or work</small>
                     </div>
-                    <div class="card-body p-0">
-                        <!-- AzuraCast Song History Widget -->
-                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
-                        <iframe src="https://az1.cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/history?theme=dark" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 500px; border: 0;"></iframe>
+                    <div class="card-body">
+                        <!-- AzuraCast Now Playing Player Embed (Replace URL) -->
+                        <div class="widget-container mb-4">
+                            <iframe src="https://demo.azuracast.com/public/azuraradio/embed?theme=dark" height="150" loading="lazy"></iframe>
+                        </div>
+                        
+                        <!-- Tabs for Interaction -->
+                        <ul class="nav nav-tabs" id="stream2Tabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="s2-request-tab" data-bs-toggle="tab" data-bs-target="#s2-request" type="button" role="tab">Request Song</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="s2-history-tab" data-bs-toggle="tab" data-bs-target="#s2-history" type="button" role="tab">History</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content bg-dark p-3 rounded-bottom border border-top-0 border-secondary">
+                            <!-- Song Request Tab -->
+                            <div class="tab-pane fade show active" id="s2-request" role="tabpanel">
+                                <div class="widget-container">
+                                    <iframe src="https://demo.azuracast.com/public/azuraradio/request" height="350" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                            <!-- Song History Tab -->
+                            <div class="tab-pane fade" id="s2-history" role="tabpanel">
+                                <div class="widget-container">
+                                    <iframe src="https://demo.azuracast.com/public/azuraradio/history" height="350" loading="lazy"></iframe>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
         </div>
     </main>
 
+    <!-- Contact Section -->
+    <section class="container my-5 py-4 border-top border-secondary" id="contact">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body p-4">
+                        <h3 class="card-title text-center fw-bold mb-3">📬 Get In Touch</h3>
+                        <p class="text-muted text-center mb-4">Shoutouts, advertising queries, or feedback? Send us a message!</p>
+                        
+                        <!-- Static Form Processing Setup for Cloudflare Pages Pages Webhooks or alternative forms handlers -->
+                        <form action="#" method="POST" id="contactForm">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Your Name</label>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="john@example.com" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject</label>
+                                <input type="text" class="form-control" id="subject" name="subject" placeholder="Shoutout Request" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="message" class="form-label">Message</label>
+                                <textarea class="form-control" id="message" name="message" rows="4" placeholder="Your message here..." required></textarea>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary fw-bold py-2">Send Message</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
-    <footer class="bg-dark text-muted py-4 border-top border-secondary text-center">
+    <footer class="bg-dark text-center py-4 border-top border-secondary text-muted">
         <div class="container">
-            <p class="mb-1">&copy; 2026 Cloud Radio Station. All Rights Reserved.</p>
-            <p class="small text-secondary">Powered by <a href="https://www.azuracast.com" target="_blank" class="text-info text-decoration-none">AzuraCast</a> & Hosted on <a href="https://pages.cloudflare.com" target="_blank" class="text-warning text-decoration-none">Cloudflare Pages</a>.</p>
+            <p class="mb-0">&copy; 2026 CloudRadio. Powered by <a href="https://www.azuracast.com/" class="text-decoration-none text-secondary" target="_blank">AzuraCast</a> and hosted on <a href="https://pages.cloudflare.com/" class="text-decoration-none text-secondary" target="_blank">Cloudflare Pages</a>.</p>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 Bundle JS -->
+    <!-- Bootstrap 5 JavaScript Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
