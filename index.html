@@ -5,245 +5,134 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cloud Radio - Live Stream</title>
     <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- FontAwesome for Icons -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #0f172a;
             color: #f8fafc;
             font-family: system-ui, -apple-system, sans-serif;
         }
-        .navbar {
-            background-color: #1e293b !important;
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, #311042 100%);
+            border-bottom: 1px solid #334155;
         }
         .card {
             background-color: #1e293b;
             border: 1px solid #334155;
             color: #f8fafc;
         }
-        .station-header {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 1rem;
-            padding: 2.5rem;
-            margin-bottom: 2rem;
+        .card-header {
+            background-color: #0f172a;
+            border-bottom: 1px solid #334155;
+            font-weight: 600;
         }
         .btn-primary {
-            background-color: #2563eb;
-            border: none;
+            background-color: #6366f1;
+            border-color: #6366f1;
         }
         .btn-primary:hover {
-            background-color: #1d4ed8;
+            background-color: #4f46e5;
+            border-color: #4f46e5;
         }
-        .history-item {
-            border-bottom: 1px solid #334155;
-            padding: 0.75rem 0;
-        }
-        .history-item:last-child {
-            border-bottom: none;
+        iframe {
+            border: none;
+            border-radius: 8px;
+            background: transparent;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top border-bottom border-secondary">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="#">
-                <i class="fa-solid fa-radio me-2 text-info"></i>Cloud Radio
-            </a>
+            <a class="navbar-brand text-info" href="#"><i class="fa-solid fa-radio me-2"></i>CLOUD RADIO</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-slide"></span>
+                <span class="navbar-toggler-index"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#request">Request Song</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#history">History</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#listen"><i class="fa-solid fa-play me-1"></i> Listen Live</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#request"><i class="fa-solid fa-music me-1"></i> Request Song</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#history"><i class="fa-solid fa-history me-1"></i> History</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Container -->
-    <div class="container my-5">
-        
-        <!-- Placeholder Configuration Alert -->
-        <div class="alert alert-info border-0 shadow-sm d-flex align-items-center mb-4" role="alert">
-            <i class="fa-solid fa-circle-info me-3 fs-4"></i>
-            <div>
-                <strong>Deployment Ready:</strong> To connect your live stream, open this <code>index.html</code> file and replace <code>your-azuracast-domain.com</code> and <code>your_station_shortcode</code> with your actual AzuraCast credentials.
+    <!-- Hero / Now Playing Section -->
+    <header id="listen" class="hero-section py-5 text-center">
+        <div class="container py-4">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <span class="badge bg-danger mb-3 px-3 py-2 text-uppercase tracking-wider"><i class="fa-solid fa-circle-dot me-1 fa-pulse"></i> Live Broadcast</span>
+                    <h1 class="display-4 fw-bold mb-4">Welcome to Cloud Radio</h1>
+                    
+                    <!-- AzuraCast Now Playing Player Widget -->
+                    <div class="p-3 bg-dark bg-opacity-50 rounded-3 shadow border border-secondary mb-4">
+                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
+                        <iframe src="https://demo.azuracast.com/public/radio/embed" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 150px; border: 0;"></iframe>
+                    </div>
+                    
+                    <p class="lead text-muted">Streaming the finest beats 24/7 directly from the cloud.</p>
+                </div>
             </div>
         </div>
+    </header>
 
+    <!-- Main Content Section -->
+    <main class="container my-5">
         <div class="row g-4">
             
-            <!-- Left Column: Now Playing & Request -->
-            <div class="col-lg-8">
-                
-                <!-- Now Playing Widget Card -->
-                <div class="station-header text-center text-md-start shadow">
-                    <div class="row align-items-center g-4">
-                        <div class="col-md-3 text-center">
-                            <!-- AzuraCast Album Art Wrapper -->
-                            <img id="album-art" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=300&auto=format&fit=crop" class="img-fluid rounded shadow-lg" alt="Album Art" style="max-height: 150px; object-fit: cover;">
-                        </div>
-                        <div class="col-md-9">
-                            <span class="badge bg-danger mb-2 px-3 py-2 text-uppercase tracking-wider fw-bold">
-                                <span class="spinner-grow spinner-grow-sm me-1" role="status"></span>Live
-                            </span>
-                            <h1 id="song-title" class="fw-bold mb-1">Loading Title...</h1>
-                            <p id="song-artist" class="fs-5 text-white-50 mb-3">Loading Artist...</p>
-                            
-                            <!-- Audio Player Element -->
-                            <div class="bg-dark bg-opacity-50 p-3 rounded-3 d-flex align-items-center">
-                                <audio id="radio-player" src="https://your-azuracast-domain.com/radio/8000/radio.mp3" preload="none"></audio>
-                                <button id="play-btn" class="btn btn-light btn-lg rounded-circle me-3">
-                                    <i id="play-icon" class="fa-solid fa-play text-dark"></i>
-                                </button>
-                                <div class="w-100">
-                                    <div class="d-flex justify-content-between small text-white-50 mb-1">
-                                        <span>Live Stream</span>
-                                        <span id="listeners-count"><i class="fa-solid fa-user me-1"></i> 0</span>
-                                    </div>
-                                    <div class="progress" style="height: 6px;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-info" style="width: 100%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            <!-- Song Request Widget Column -->
+            <section id="request" class="col-lg-7">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header text-info d-flex align-items-center">
+                        <i class="fa-solid fa-microphone-lines me-2"></i>
+                        <h5 class="mb-0">Request a Song</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- AzuraCast Song Request Widget -->
+                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
+                        <iframe src="https://demo.azuracast.com/public/radio/request" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 500px; border: 0;"></iframe>
                     </div>
                 </div>
+            </section>
 
-                <!-- Song Request Widget Form -->
-                <div class="card shadow-sm mb-4" id="request">
-                    <div class="card-body p-4">
-                        <h4 class="card-title fw-bold mb-3">
-                            <i class="fa-solid fa-music me-2 text-primary"></i>Request a Song
-                        </h4>
-                        <p class="text-secondary small">Search our station library to automatically queue up your favourite track.</p>
-                        
-                        <!-- Embedding AzuraCast Public Request Iframe Wrapper -->
-                        <div class="ratio ratio-16x9 border rounded bg-light" style="overflow: hidden; min-height: 450px;">
-                            <iframe src="https://your-azuracast-domain.com/public/your_station_shortcode/embed-requests" frameborder="0" allowtransparency="true"></iframe>
-                        </div>
+            <!-- Song History Widget Column -->
+            <section id="history" class="col-lg-5">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-header text-warning d-flex align-items-center">
+                        <i class="fa-solid fa-clock-rotate-left me-2"></i>
+                        <h5 class="mb-0">Recently Played</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <!-- AzuraCast Song History Widget -->
+                        <!-- INSTRUCTION: Replace 'demo.azuracast.com' and 'radio' with your AzuraCast domain and station shortcode -->
+                        <iframe src="https://az1.cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/history" frameborder="0" allowtransparency="true" style="width: 100%; min-height: 500px; border: 0;"></iframe>
                     </div>
                 </div>
-
-            </div>
-
-            <!-- Right Column: Song History Sidebar -->
-            <div class="col-lg-4" id="history">
-                <div class="card shadow-sm h-100">
-                    <div class="card-body p-4">
-                        <h4 class="card-title fw-bold mb-3">
-                            <i class="fa-solid fa-history me-2 text-warning"></i>Song History
-                        </h4>
-                        <p class="text-secondary small mb-4">Recently played tracks on this station.</p>
-                        
-                        <!-- Dynamic History Container via API -->
-                        <div id="history-list">
-                            <div class="text-center text-muted py-4">
-                                <div class="spinner-border spinner-border-sm mb-2" role="status"></div>
-                                <p class="small mb-0">Fetching recent tracks...</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </section>
 
         </div>
-    </div>
+    </main>
 
     <!-- Footer -->
-    <footer class="bg-dark text-center py-4 border-top border-secondary border-opacity-25 mt-auto">
-        <p class="text-secondary small mb-0">&copy; 2026 Cloud Radio. Powered by <a href="https://www.azuracast.com/" target="_blank" class="text-info text-decoration-none">AzuraCast</a> & <a href="https://pages.cloudflare.com/" target="_blank" class="text-info text-decoration-none">Cloudflare Pages</a>.</p>
+    <footer class="bg-dark text-muted py-4 border-top border-secondary text-center">
+        <div class="container">
+            <p class="mb-1">&copy; 2026 Cloud Radio Station. All Rights Reserved.</p>
+            <p class="small text-secondary">Powered by <a href="https://www.azuracast.com" target="_blank" class="text-info text-decoration-none">AzuraCast</a> & Hosted on <a href="https://pages.cloudflare.com" target="_blank" class="text-warning text-decoration-none">Cloudflare Pages</a>.</p>
+        </div>
     </footer>
 
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Custom Script to Handle Real-time AzuraCast API Integrations -->
-    <script>
-        // CONFIGURATION: Replace these values with your actual AzuraCast station setup
-        const AZURACAST_URL = 'https://az1.cheapshoutcast365.co.uk'; 
-        const STATION_SHORTCODE = 'cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040'; 
-
-        // DOM Elements
-        const playBtn = document.getElementById('play-btn');
-        const playIcon = document.getElementById('play-icon');
-        const audioPlayer = document.getElementById('radio-player');
-        const songTitle = document.getElementById('song-title');
-        const songArtist = document.getElementById('song-artist');
-        const albumArt = document.getElementById('album-art');
-        const listenersCount = document.getElementById('listeners-count');
-        const historyList = document.getElementById('history-list');
-
-        // HTML5 Audio Custom Play/Pause Controls
-        playBtn.addEventListener('click', () => {
-            if (audioPlayer.paused) {
-                // To avoid delay cache issues on live radio, reload source on play
-                audioPlayer.load();
-                audioPlayer.play().then(() => {
-                    playIcon.className = 'fa-solid fa-pause text-dark';
-                }).catch(err => console.error("Playback block:", err));
-            } else {
-                audioPlayer.pause();
-                playIcon.className = 'fa-solid fa-play text-dark';
-            }
-        });
-
-        // Fetch Real-time Now Playing, Metadata & History from AzuraCast API
-        async function fetchStationData() {
-            try {
-                const response = await fetch(`${AZURACAST_URL}/api/https://az1.cheapshoutcast365.co.uk/api/nowplaying/${STATION_SHORTCODE}.json`);
-                if (!response.ok) throw new Error('Network network issue fetching API data.');
-                const data = await response.json();
-
-                // 1. Update Now Playing UI Metadata
-                songTitle.textContent = data.now_playing.song.title || 'Unknown Title';
-                songArtist.textContent = data.now_playing.song.artist || 'Unknown Artist';
-                if (data.now_playing.song.art) {
-                    albumArt.src = data.now_playing.song.art;
-                }
-                listenersCount.innerHTML = `<i class="fa-solid fa-user me-1 text-info"></i> ${data.listeners.total}`;
-
-                // Update Audio Stream URL dynamically if it matches defaults
-                if (audioPlayer.src.includes('your-azuracast-domain.com') && data.station.listen_url) {
-                    audioPlayer.src = data.station.listen_url;
-                }
-
-                // 2. Process and Render Song History List
-                if (data.song_history && data.song_history.length > 0) {
-                    historyList.innerHTML = ''; // Clear layout loading state
-                    data.song_history.slice(0, 6).forEach(item => {
-                        const time = new Date(item.played_at * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        
-                        const historyItemHTML = `
-                            <div class="history-item d-flex align-items-center">
-                                <img src="${item.song.art || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=64'}" class="rounded me-3" style="width: 42px; height: 42px; object-fit: cover;" alt="Art">
-                                <div class="overflow-hidden">
-                                    <div class="text-truncate fw-semibold small">${item.song.title}</div>
-                                    <div class="text-truncate text-white-50 x-small" style="font-size: 0.8rem;">${item.song.artist}</div>
-                                    <div class="text-muted x-small" style="font-size: 0.7rem;"><i class="fa-regular fa-clock me-1"></i>${time}</div>
-                                </div>
-                            </div>
-                        `;
-                        historyList.innerHTML += historyItemHTML;
-                    });
-                } else {
-                    historyList.innerHTML = '<p class="text-muted small py-3 text-center">No history logs tracked yet.</p>';
-                }
-
-            } catch (error) {
-                console.error('Error fetching AzuraCast data:', error);
-            }
-        }
-
-        // Run updates on mount and pull fresh data every 15 seconds
-        fetchStationData();
-        setInterval(fetchStationData, 15000);
-    </script>
+    <!-- Bootstrap 5 Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 
