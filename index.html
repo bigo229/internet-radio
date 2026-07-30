@@ -3,254 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Stream Player</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    <title>Live Radio Dashboard</title>
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0f111a;
+            --card-bg: #1a1d29;
+            --accent-color: #00ddff;
+            --text-main: #f1f3f9;
+            --text-muted: #8a90a6;
+        }
         body {
-            background-color: #0f111a;
-            color: #e2e8f0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: system-ui, -apple-system, sans-serif;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
         }
-        .player-card {
-            background: linear-gradient(145deg, #1e2235, #141724);
-            border: 1px solid #2d334d;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
-        }
-        .album-art-wrapper {
-            position: relative;
-            width: 140px;
-            height: 140px;
-            margin: 0 auto;
+        .player-card, .system-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
         }
         .album-art {
-            width: 100%;
-            height: 100%;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            border: 2px solid #3b4261;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
         }
-        .live-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #ef4444;
-            color: white;
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 50px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(239, 68, 68, 0.6);
-            animation: pulse 2s infinite;
+        .accent-text {
+            color: var(--accent-color);
         }
-        .btn-play {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background-color: #3b82f6;
+        .btn-accent {
+            background-color: var(--accent-color);
+            color: #000;
+            font-weight: 600;
             border: none;
-            color: white;
-            font-size: 1.8rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
-        .btn-play:hover {
-            background-color: #2563eb;
-            transform: scale(1.05);
+        .btn-accent:hover, .btn-accent:focus {
+            background-color: #00b3cc;
+            color: #000;
         }
-        .volume-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 50px;
-            background: #2d334d;
-            outline: none;
+        .form-control-dark {
+            background-color: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-main);
         }
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            transition: background 0.15s ease-in-out;
+        .form-control-dark:focus {
+            background-color: rgba(0,0,0,0.3);
+            border-color: var(--accent-color);
+            color: var(--text-main);
+            box-shadow: 0 0 0 0.25rem rgba(0, 221, 255, 0.25);
         }
-        .volume-slider::-webkit-slider-thumb:hover {
-            background: #60a5fa;
+        .accordion-item-dark {
+            background-color: rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.05) !important;
+            border-radius: 8px !important;
+            margin-bottom: 8px;
+            overflow: hidden;
         }
-        .text-muted-custom {
-            color: #94a3b8;
+        .accordion-button-dark {
+            background-color: transparent !important;
+            color: var(--text-main) !important;
+            box-shadow: none !important;
         }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
+        .accordion-button-dark:not(.collapsed) {
+            color: var(--accent-color) !important;
+        }
+        .accordion-button-dark::after {
+            filter: invert(1);
+        }
+        .history-thumb {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
-<div class="container my-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-7 col-lg-5 text-center">
+<div class="container py-5">
+    <div class="row g-4 justify-content-center">
+        
+        <!-- Left Side: Player & Interactive Request System -->
+        <div class="col-lg-7">
             
             <!-- Radio Player Card -->
-            <div class="player-card p-4 p-sm-5 mb-4">
-                
-                <!-- Album Artwork / Live Indicator -->
-                <div class="album-art-wrapper mb-4">
-                    <img id="album-art" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&auto=format&fit=crop&q=60" alt="Album Art" class="album-art">
-                    <span class="live-badge d-none" id="live-indicator">Live</span>
+            <div class="player-card p-4 mb-4">
+                <div class="d-flex align-items-center flex-column flex-sm-row text-center text-sm-start gap-4">
+                    <img id="albumArt" src="https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=150" alt="Album Art" class="album-art">
+                    <div class="flex-grow-1">
+                        <span class="badge bg-danger mb-2" id="liveBadge"><i class="bi bi-broadcast me-1"></i> LIVE</span>
+                        <h3 class="fw-bold mb-1" id="trackTitle">Loading Station...</h3>
+                        <p class="text-muted mb-3" id="trackArtist">Please wait</p>
+                        
+                        <div class="d-flex align-items-center justify-content-center justify-content-sm-start gap-3">
+                            <button class="btn btn-accent btn-lg px-4 rounded-pill" id="playBtn">
+                                <i class="bi bi-play-fill me-1"></i> Play
+                            </button>
+                            <div class="d-flex align-items-center gap-2 style-volume" style="max-width: 150px; width: 100%;">
+                                <i class="bi bi-volume-up-fill text-muted"></i>
+                                <input type="range" class="form-range" id="volumeControl" min="0" max="1" step="0.05" value="0.8">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-                <!-- Track Info Metadata -->
-                <div class="metadata-container mb-4">
-                    <h3 id="track-title" class="fs-4 fw-bold mb-1 text-truncate">Loading Stream...</h3>
-                    <p id="track-artist" class="fs-6 text-muted-custom mb-0 text-truncate">Please wait</p>
-                </div>
-
-                <!-- Main Audio Element -->
-                <audio id="radio-audio" preload="none"></audio>
-
-                <!-- Action Controls -->
-                <div class="controls-container d-flex align-items-center justify-content-center gap-4 mb-4">
-                    <button class="btn-play" id="play-btn" aria-label="Play">
-                        <i class="bi bi-play-fill" id="play-icon"></i>
-                    </button>
-                </div>
-
-                <!-- Volume Row -->
-                <div class="volume-container d-flex align-items-center justify-content-center gap-3 mx-auto" style="max-width: 240px;">
-                    <i class="bi bi-volume-down-fill text-muted-custom fs-5" id="volume-icon"></i>
-                    <input type="range" class="volume-slider" id="volume-control" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
-                </div>
-
             </div>
 
-            <!-- Station Brand Footer -->
-            <p class="small text-muted-custom mb-0">Powered by AzuraCast API & Cloudflare Pages</p>
-            
+            <!-- Interactive Request System Card -->
+            <div class="system-card p-4">
+                <h4 class="fw-bold mb-3"><i class="bi bi-music-note-list accent-text me-2"></i>Song Request System</h4>
+                <p class="text-muted small">Search the station library catalog to request your favorite track instantly.</p>
+                
+                <form id="searchForm" class="row g-2 mb-4">
+                    <div class="col">
+                        <input type="text" class="form-control form-control-dark py-2" id="searchQuery" placeholder="Search track, artist, or album..." required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-accent py-2 px-4" id="searchBtn">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Search Results Display Area -->
+                <div id="requestAlerts"></div>
+                <div id="searchResults" class="list-group list-group-flush border-0 rounded-3 overflow-hidden" style="max-height: 350px; overflow-y: auto;">
+                    <div class="text-center text-muted p-4 border border-secondary border-opacity-10 rounded">
+                        <i class="bi bi-search-heart display-6 mb-2 d-block text-muted opacity-50"></i>
+                        Enter a keyword above to explore requestable music tracks.
+                    </div>
+                </div>
+            </div>
+
         </div>
+
+        <!-- Right Side: Accordion Track History Payload Array -->
+        <div class="col-lg-5">
+            <div class="system-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold mb-0"><i class="bi bi-history accent-text me-2"></i>Track History</h4>
+                    <span class="badge bg-secondary rounded-pill" id="historyCount">0 Tracks</span>
+                </div>
+                <p class="text-muted small mb-4">Real-time log of recently played tracks parsed directly from the station's JSON API payload.</p>
+
+                <!-- Accordion Dynamic Data Container -->
+                <div class="accordion" id="historyAccordion">
+                    <!-- Dynamic history rows will populate here via javascript fetch polling -->
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<!-- Bootstrap Bundle JS -->
+<!-- Audio Stream API Element -->
+<audio id="audioStream"></audio>
+
+<!-- Bootstrap 5 Bundle JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    // --- Configuration ---
-    // Replace with your exact AzuraCast stream URL and API endpoint
-    const STREAM_URL = 'https://az1.cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3';
-    const API_URL = 'https://az1.cheapshoutcast365.co.uk/api/nowplaying';
-    const POLL_INTERVAL = 15000; // 15 seconds
+    // --- USER CONFIGURATION ENDPOINTS ---
+    // Update these strings to match your target AzuraCast instance installation paths.
+    const BASE_URL = "https://demo.azuracast.com"; 
+    const STATION_ID = "8010"; // Base radio station ID number
+    
+    const STREAM_URL = `${BASE_URL}/radio/${STATION_ID}/radio.mp3`;
+    const NOWPLAYING_API = `${BASE_URL}/api/nowplaying/${STATION_ID}`;
+    const REQUEST_SEARCH_API = `${BASE_URL}/api/station/${STATION_ID}/requests`;
 
-    // --- DOM Elements ---
-    const audio = document.getElementById('radio-audio');
-    const playBtn = document.getElementById('play-btn');
-    const playIcon = document.getElementById('play-icon');
-    const volumeControl = document.getElementById('volume-control');
-    const volumeIcon = document.getElementById('volume-icon');
-    const trackTitle = document.getElementById('track-title');
-    const trackArtist = document.getElementById('track-artist');
-    const albumArt = document.getElementById('album-art');
-    const liveIndicator = document.getElementById('live-indicator');
+    // --- DOM ELEMENT REFERENCES ---
+    const audioStream = document.getElementById('audioStream');
+    const playBtn = document.getElementById('playBtn');
+    const volumeControl = document.getElementById('volumeControl');
+    const trackTitle = document.getElementById('trackTitle');
+    const trackArtist = document.getElementById('trackArtist');
+    const albumArt = document.getElementById('albumArt');
+    const historyAccordion = document.getElementById('historyAccordion');
+    const historyCount = document.getElementById('historyCount');
+    const searchForm = document.getElementById('searchForm');
+    const searchQuery = document.getElementById('searchQuery');
+    const searchResults = document.getElementById('searchResults');
+    const requestAlerts = document.getElementById('requestAlerts');
 
-    // --- State Variables ---
     let isPlaying = false;
 
-    // --- Audio Player Logic ---
-    function togglePlay() {
+    // --- STREAM PLAYER CONTROLLER ---
+    playBtn.addEventListener('click', () => {
         if (!isPlaying) {
-            // Buffer flushing logic: force fresh stream chunks on click
-            audio.src = STREAM_URL + '?nocache=' + Date.now();
-            audio.load();
-            
-            audio.play()
+            // Append explicit cache busting string parameter to prevent old buffer playback cycles
+            audioStream.src = `${STREAM_URL}?nocache=${Date.now()}`;
+            audioStream.volume = volumeControl.value;
+            audioStream.play()
                 .then(() => {
                     isPlaying = true;
-                    playIcon.className = 'bi bi-pause-fill';
-                    liveIndicator.classList.remove('d-none');
+                    playBtn.innerHTML = '<i class="bi bi-pause-fill me-1"></i> Pause';
+                    playBtn.classList.replace('btn-accent', 'btn-outline-danger');
                 })
-                .catch(err => {
-                    console.error("Playback failed:", err);
-                });
+                .catch(err => console.error("Audio playback stalled or blocked: ", err));
         } else {
-            audio.pause();
-            // Disconnect source completely to stop data downloading in background
-            audio.src = '';
+            audioStream.pause();
+            audioStream.src = ""; // Hard flush the client connection to end standard stream download pipelines
             isPlaying = false;
-            playIcon.className = 'bi bi-play-fill';
-            liveIndicator.classList.add('d-none');
+            playBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Play';
+            playBtn.classList.replace('btn-outline-danger', 'btn-accent');
         }
-    }
+    });
 
-    // --- Volume Management ---
-    function handleVolumeChange(e) {
-        const val = e.target.value;
-        audio.volume = val;
-        
-        // Dynamic volume icons
-        if (val == 0) {
-            volumeIcon.className = 'bi bi-volume-mute-fill text-danger';
-        } else if (val < 0.4) {
-            volumeIcon.className = 'bi bi-volume-down-fill text-muted-custom';
-        } else {
-            volumeIcon.className = 'bi bi-volume-up-fill text-muted-custom';
-        }
-    }
+    volumeControl.addEventListener('input', (e) => {
+        audioStream.volume = e.target.value;
+    });
 
-    // --- Fetch Metadata (API Polling) ---
-    async function updateMetadata() {
+    // --- LIGHTWEIGHT SEQUENTIAL NOW PLAYING FETCH POLLING ---
+    async function updateNowPlaying() {
         try {
-            const response = await fetch(API_URL);
-            if (!response.ok) throw new Error('Network response failure');
-            
+            const response = await fetch(NOWPLAYING_API);
+            if (!response.ok) throw new Error("API Network response sequence failed");
             const data = await response.json();
-            
-            // Extract fields from AzuraCast minimum/standard now-playing payload
-            const currentSong = data.now_playing?.song;
-            
-            if (currentSong) {
-                trackTitle.textContent = currentSong.title || 'Unknown Title';
-                trackArtist.textContent = currentSong.artist || 'Unknown Artist';
-                
-                // Fallback to stock image if artwork is missing or default
-                if (currentSong.art && !currentSong.art.includes('generic')) {
-                    albumArt.src = currentSong.art;
-                } else {
-                    albumArt.src = 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=300&auto=format&fit=crop&q=60';
-                }
+
+            // 1. Process Current Track Info
+            if (data.now_playing && data.now_playing.song) {
+                const current = data.now_playing.song;
+                trackTitle.innerText = current.title || "Unknown Title";
+                trackArtist.innerText = current.artist || "Unknown Artist";
+                albumArt.src = current.art || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=150";
+            }
+
+            // 2. Process Track History Payload Array Output
+            if (data.song_history && Array.isArray(data.song_history)) {
+                renderHistory(data.song_history);
             }
         } catch (error) {
-            console.warn('Metadata fetch failed:', error);
-            // Gracefully keep current layout if API temporary drops
+            console.error("Failed fetching context array records:", error);
         }
     }
 
-    // --- Event Listeners & Initialization ---
-    playBtn.addEventListener('click', togglePlay);
-    volumeControl.addEventListener('input', handleVolumeChange);
-    
-    // Set initial volume
-    audio.volume = volumeControl.value;
+    // --- RENDER RECENT TRACK HISTORY ACCORDION ---
+    function renderHistory(historyArray) {
+        historyCount.innerText = `${historyArray.length} Tracks`;
+        
+        if (historyArray.length === 0) {
+            historyAccordion.innerHTML = '<p class="text-muted text-center py-3">No recent history available.</p>';
+            return;
+        }
 
-    // Run first metadata query immediately, then pull on interval
-    updateMetadata();
-    setInterval(updateMetadata, POLL_INTERVAL);
+        historyAccordion.innerHTML = historyArray.map((item, index) => {
+            const song = item.song;
+            const playedAt = new Date(item.played_at * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const durationMin = Math.floor(song.duration / 60);
+            const durationSec = song.duration % 60;
+            const durationFormatted = `${durationMin}:${durationSec.toString().padStart(2, '0')}`;
+            
+            return `
+                <div class="accordion-item accordion-item-dark border-0">
+                    <h2 class="accordion-header" id="heading${index}">
+                        <button class="accordion-button accordion-button-dark collapsed p-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="false" aria-controls="collapse${index}">
+                            <div class="d-flex align-items-center gap-3 w-100 text-start">
+                                <img src="${song.art || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=50'}" class="history-thumb" alt="Art">
+                                <div class="flex-grow-1 overflow-hidden" style="max-width: 75%;">
+                                    <div class="fw-semibold text-truncate text-white small">${song.title}</div>
+                                    <div class="text-muted extra-small text-truncate" style="font-size: 0.8rem;">${song.artist}</div>
+                                </div>
+                                <span class="badge bg-dark text-muted ms-auto me-2">${playedAt}</span>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="collapse${index}" class="accordion-collapse collapse" aria-labelledby="heading${index}" data-bs-parent="#historyAccordion">
+                        <div class="accordion-body bg-dark bg-opacity-20 text-muted small border-top border-secondary border-opacity-10">
+                            <ul class="list-unstyled mb-0 row g-2">
+                                <li class="col-6"><strong>Album:</strong> ${song.album || 'Single'}</li>
+                                <li class="col-6"><strong>Duration:</strong> ${durationFormatted}</li>
+                                <li class="col-6"><strong>JSON ID:</strong> <code>${song.id || 'N/A'}</code></li>
+                                <li class="col-6"><strong>Track Type:</strong> ${item.is_request ? '<span class="text-success">User Request</span>' : 'Standard Play'}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // --- INTERACTIVE REQUEST SYSTEM CATALOG SEARCH ---
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const query = searchQuery.value.trim();
+        if (!query) return;
+
+        searchResults.innerHTML = `
+            <div class="text-center p-4">
+                <div class="spinner-border text-info spinner-border-sm" role="status"></div>
+                <span class="ms-2 text-muted small">Querying media database...</span>
+            </div>
+        `;
+
+        try {
+            // Note: AzuraCast catalog endpoints default to JSON format responses
+            const response = await fetch(`${REQUEST_SEARCH_API}?search=${encodeURIComponent(query)}`);
+            if (!response.ok) throw new Error("Search execution failed");
+            const tracks = await response.json();
+
+            renderSearchResults(tracks);
+        } catch (error) {
+            console.error("Search system error:", error);
+            searchResults.innerHTML = `
+                <div class="alert alert-danger small m-2" role="alert">
+                    Failed to reach station index. Ensure server endpoints handle external CORS requests.
+                </div>
+            `;
+        }
+    });
+
+    // --- RENDER REQUEST SYSTEM SEARCH RESULTS ---
+    function renderSearchResults(tracksArray) {
+        if (!tracksArray || tracksArray.length === 0) {
+            searchResults.innerHTML = `
+                <div class="text-center text-muted p-4">
+                    No matches found for that keyword. Try another title or artist.
+                </div>
+            `;
+            return;
+        }
+
+        searchResults.innerHTML = tracksArray.map(item => {
+            const song = item.song;
+            return `
+                <div class="list-group-item bg-dark bg-opacity-50 border-bottom border-secondary border-opacity-10 text-white p-3 d-flex align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center gap-3 overflow-hidden">
+                        <img src="${song.art || 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=50'}" class="history-thumb" alt="Art">
+                        <div class="text-truncate">
+                            <div class="fw-semibold text-truncate small">${song.title}</div>
+                            <div class="text-muted extra-small text-truncate" style="font-size: 0.8rem;">${song.artist}</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-sm btn-accent rounded-pill px-3 flex-shrink-0" onclick="submitSongRequest('${item.request_url}')">
+                        Request
+                    </button>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // --- SUBMIT COMPONENT SONG REQUEST API ACTION ---
+    async function submitSongRequest(requestUrl) {
+        if (!requestUrl) return;
+
+        // Display instant feedback alert notification
+        requestAlerts.innerHTML = `
+            <div class="alert alert-info small d-flex align-items-center mb-3" role="alert">
+                <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                Submitting song request execution hook...
+            </div>
+        `;
+
+        try {
+            // AzuraCast endpoints require a POST request action to finalize track allocation triggers
+            const response = await fetch(requestUrl, { method: 'POST' });
+            
+            if (response.ok) {
+                requestAlerts.innerHTML = `
+                    <div class="alert alert-success alert-dismissible small fade show mb-3" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> <strong>Success!</strong> Track placed in playback queue queue successfully.
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                const errMsg = errData.message || "Request rejected by automation policy thresholds (e.g. rate limit limits).";
+                requestAlerts.innerHTML = `
+                    <div class="alert alert-warning alert-dismissible small fade show mb-3" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> ${errMsg}
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error("Submission processing error:", error);
+            requestAlerts.innerHTML = `
+                <div class="alert alert-danger alert-dismissible small fade show mb-3" role="alert">
+                    <i class="bi bi-x-circle-fill me-2"></i> Network error processing request string structure.
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+        }
+    }
+
+    // --- INITIALIZE POLLING SCHEDULERS ---
+    updateNowPlaying();
+    setInterval(updateNowPlaying, 15000); // Sequence execution loop cycle defaults to 15 seconds
 </script>
 </body>
 </html>
