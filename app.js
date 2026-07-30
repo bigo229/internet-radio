@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- VPS Configurations ---
-    const AZURACAST_BASE_URL = "https://yourvps.com"; // Replace with your VPS address
-    const STATION_SHORTCODE = "mystation";                 // Replace with your station identifier
+    const AZURACAST_BASE_URL = "https://az1.cheapshoutcast365.co.uk"; // Replace with your VPS address
+    const STATION_SHORTCODE = "cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040";                 // Replace with your station identifier
     
     const player = document.getElementById('radio-player');
     const playBtn = document.getElementById('play-btn');
@@ -90,8 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
 }
 
 // --- AzuraCast Song Request Engine Integration ---
-const AZURACAST_BASE_URL = "https://yourvps.com"; // Keep consistent with your top configuration
-const STATION_SHORTCODE = "mystation";                 // Keep consistent with your top configuration
+const AZURACAST_BASE_URL = "https://az1.cheapshoutcast365.co.uk"; // Keep consistent with your top configuration
+const STATION_SHORTCODE = "cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040";                 // Keep consistent with your top configuration
 
 const openRequestBtn = document.getElementById('open-request-btn');
 const closeRequestBtn = document.getElementById('close-request-btn');
