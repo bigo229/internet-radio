@@ -3,185 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oldies | Radio</title>
-    <!-- Tailwind CSS for modern, rapid styling -->
-    <script src="https://tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cloudflare.com">
+    <title>CloudRadio - Live Internet Radio</title>
+    <!-- Bootstrap 5 CSS via CDN -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
+    <!-- FontAwesome for Player Icons -->
+    <link href="https://cloudflare.com" rel="stylesheet">
     <style>
-    /* Audio visualizer animations */
-    .bar { animation: bounce 1.2s ease-in-out infinite alternate; }
-    @keyframes bounce { 0% { height: 4px; } 100% { height: 40px; } }
-    .bar:nth-child(2) { animation-delay: 0.2s; }
-    .bar:nth-child(3) { animation-delay: 0.4s; }
-    .bar:nth-child(4) { animation-delay: 0.6s; }
-
-    /* Custom Hardware-Accelerated Dynamic Gradient */
-    .animate-gradient-shift {
-        background-size: 400% 400%;
-        animation: gradientMovement 18s ease infinite;
-        will-change: background-position;
-    }
-
-    @keyframes gradientMovement {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-    }
-</style>
-
+        body { background-color: #121212; color: #ffffff; }
+        .hero-section { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 60px 0; border-radius: 0 0 20px 20px; }
+        .card { background-color: #1e1e1e; border: 1px solid #2d2d2d; color: #fff; }
+        .player-btn { width: 70px; height: 70px; border-radius: 50%; font-size: 1.5rem; transition: transform 0.2s; }
+        .player-btn:hover { transform: scale(1.1); }
+        .footer { background-color: #0b0b0b; padding: 20px 0; font-size: 0.9rem; }
+    </style>
 </head>
-<body class="bg-gradient-to-tr from-slate-950 via-indigo-950 to-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between animate-gradient-shift">
+<body>
 
-
-    <!-- Top Navigation -->
-    <header class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-indigo-600 p-2 rounded-lg text-white animate-pulse">
-                    <i class="fa-solid fa-radio text-xl"></i>
-                </div>
-                <span class="text-xl font-bold tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">NOVA WAVE</span>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-info" href="#"><i class="fa-solid fa-radio me-2"></i>CloudRadio</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#schedule">Schedule</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
             </div>
-            <nav class="hidden md:flex space-x-8 text-sm font-medium text-slate-400">
-                <a href="#" class="hover:text-indigo-400 transition">Home</a>
-                <a href="#schedule" class="hover:text-indigo-400 transition">Schedule</a>
-                <a href="#podcasts" class="hover:text-indigo-400 transition">Podcasts</a>
-            </nav>
+        </div>
+    </nav>
+
+    <!-- Hero / Live Player Section -->
+    <header id="home" class="hero-section text-center shadow-lg">
+        <div class="container py-4">
+            <h1 class="display-4 fw-bold mb-3">Live Streaming 24/7</h1>
+            <p class="lead mb-4">Your ultimate destination for curated electronic and lo-fi beats.</p>
+            
+            <!-- Audio Player Container -->
+            <div class="mx-auto p-4 card shadow" style="max-width: 450px;">
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://unsplash.com" alt="Album Art" class="rounded img-fluid me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    <div class="text-start">
+                        <span class="badge bg-danger mb-1"><i class="fa-solid fa-circle-dot fa-pulse me-1"></i> LIVE</span>
+                        <h5 class="mb-0 text-truncate" id="track-title">Loading Stream...</h5>
+                        <small class="text-muted" id="station-sub">CloudRadio Main Mix</small>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <button class="btn btn-info player-btn shadow" id="play-pause-btn" onclick="togglePlayback()">
+                        <i class="fa-solid fa-play" id="player-icon"></i>
+                    </button>
+                    <div class="d-flex align-items-center w-50 gap-2">
+                        <i class="fa-solid fa-volume-low text-muted"></i>
+                        <input type="range" class="form-range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
+                        <i class="fa-solid fa-volume-high text-muted"></i>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <!-- Main Content Hero -->
-    <main class="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-2 gap-12 items-center flex-grow w-full">
-        <!-- Inside index.html - Replace the Left Station Player Column -->
-<div class="bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 shadow-2xl flex flex-col items-center relative overflow-hidden group">
-    <div class="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-    
-    <!-- Dynamic Album Art / Cover Placeholder -->
-    <div class="w-64 h-64 bg-slate-800 rounded-2xl shadow-xl flex items-center justify-center relative group mb-6 overflow-hidden">
-        <img id="album-art" src="" alt="Album Art" class="w-full h-full object-cover hidden transition duration-500 transform group-hover:scale-105">
-        <div id="art-placeholder" class="flex items-center justify-center">
-            <i class="fa-solid fa-music text-7xl text-white/40"></i>
-        </div>
-        
-        <!-- Audio Visualizer Waves -->
-        <div id="visualizer" class="absolute bottom-4 left-0 right-0 justify-center items-end space-x-1 h-12 hidden">
-            <div class="bar w-1 bg-cyan-400 rounded-full"></div>
-            <div class="bar w-1 bg-indigo-400 rounded-full"></div>
-            <div class="bar w-1 bg-purple-400 rounded-full"></div>
-            <div class="bar w-1 bg-cyan-400 rounded-full"></div>
-        </div>
-    </div>
-
-    <!-- Live Track Metadata from AzuraCast -->
-    <div class="text-center w-full mb-4">
-        <h1 id="track-title" class="text-xl font-bold text-white truncate px-4">Loading Station...</h1>
-        <p id="track-artist" class="text-indigo-400 text-sm font-semibold tracking-wide uppercase mt-1">Please Wait</p>
-    </div>
-
-    <!-- Live Listeners Stat Pill -->
-    <div class="mb-6 flex items-center space-x-2 text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1 rounded-full">
-        <span class="relative flex h-2 w-2">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-        </span>
-        <span id="listener-count">0 Tuned In</span>
-    </div>
-
-    <!-- HTML5 Audio Component pointed directly to your VPS mountpoint -->
-    <audio id="radio-player" src="https://az1.cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3" preload="none"></audio>
-    
-    <button id="play-btn" class="w-20 h-20 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-indigo-500/30 transition transform hover:scale-105 active:scale-95 z-10">
-        <i id="play-icon" class="fa-solid fa-play text-2xl ml-1"></i>
-    </button>
-    
-    <div class="flex items-center space-x-3 mt-6 w-full max-w-xs">
-        <i class="fa-solid fa-volume-low text-slate-400"></i>
-        <input id="volume-slider" type="range" min="0" max="1" step="0.05" value="0.8" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500">
-        <i class="fa-solid fa-volume-high text-slate-400"></i>
-    </div>
-</div>
-
-        <!-- Right: Interactive Guide & Features -->
-        <div class="space-y-8">
-            <div>
-                <span class="text-xs font-bold uppercase tracking-widest bg-indigo-500/10 text-indigo-400 px-3 py-1 rounded-full">Live Broadcast</span>
-                <h2 class="text-4xl font-extrabold tracking-tight mt-3 text-white">Non-stop curated beats, streaming globally.</h2>
-                <p class="text-slate-400 mt-4 leading-relaxed">Experience lag-free high-fidelity sound hosted directly on the edge. Tune into your perfect soundscape anywhere, on any device.</p>
-            </div>
-
-            <!-- Embedded Schedule Grid -->
-            <section id="schedule" class="space-y-4">
-                <h3 class="text-lg font-bold text-slate-300 flex items-center"><i class="fa-regular fa-calendar-days mr-2 text-indigo-500"></i> Today's Schedule</h3>
-                <div class="grid gap-3">
-                    <div class="flex justify-between items-center bg-slate-900/60 p-4 rounded-xl border border-slate-800/80">
+    <!-- Main Content Grid -->
+    <main class="container my-5">
+        <div class="row g-4">
+            
+            <!-- Schedule Section -->
+            <section class="col-md-8" id="schedule">
+                <h3 class="mb-4 text-info fw-bold border-bottom pb-2">Today's Broadcast Schedule</h3>
+                <div class="list-group shadow-sm">
+                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center">
                         <div>
-                            <p class="font-semibold text-white">Neon Sunrise</p>
-                            <p class="text-xs text-slate-500">Host: DJ Chronos</p>
+                            <h6 class="mb-1 text-info">Morning Coffee Beats</h6>
+                            <small class="text-muted">Chill Lo-Fi instrumentals to start your day.</small>
                         </div>
-                        <span class="text-xs font-medium text-slate-400 bg-slate-800 px-3 py-1 rounded-md">08:00 - 12:00</span>
+                        <span class="badge bg-secondary">08:00 - 12:00</span>
                     </div>
-                    <div class="flex justify-between items-center bg-indigo-950/30 p-4 rounded-xl border border-indigo-500/30 relative">
-                        <div class="absolute top-2 right-2 flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
-                        </div>
+                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center active">
                         <div>
-                            <p class="font-semibold text-cyan-400">The Midnight Grid</p>
-                            <p class="text-xs text-indigo-300/70">Host: Synthetix</p>
+                            <h6 class="mb-1 text-white">Afternoon Global Grooves</h6>
+                            <small class="text-light opacity-75">Deep house and electronic rhythms spinning now.</small>
                         </div>
-                        <span class="text-xs font-medium text-indigo-300 bg-indigo-900/50 px-3 py-1 rounded-md">12:00 - 18:00</span>
+                        <span class="badge bg-danger">Streaming Now</span>
+                    </div>
+                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-info">Late Night Ambient Wave</h6>
+                            <small class="text-muted">Relaxing synth and soundscapes for winding down.</small>
+                        </div>
+                        <span class="badge bg-secondary">20:00 - 00:00</span>
                     </div>
                 </div>
             </section>
-		<!-- Place this inside your layout, for example right beneath your schedule section -->
-	    <section id="recent-tracks-section" class="space-y-4 mt-8">
-            <h3 class="text-lg font-bold text-slate-300 flex items-center">
-            <i class="fa-solid fa-clock-rotate-left mr-2 text-indigo-500"></i> Recently Played
-            </h3>
-            <!-- The JavaScript loop will inject history cards dynamically into this wrapper -->
-            <div id="recent-tracks-list" class="grid gap-3 opacity-90">
-            <p class="text-xs text-slate-500 italic">Fetching station history...</p>
-            </div>
-            </section>
-<!-- Song Request Section Trigger -->
-<section id="request-section" class="mt-8 space-y-4">
-    <button id="open-request-btn" class="w-full bg-slate-900 border border-slate-800 hover:border-indigo-500/50 text-indigo-400 hover:text-indigo-300 px-4 py-3 rounded-xl font-semibold text-sm transition flex items-center justify-center space-x-2 shadow-lg">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-        <span>Request a Song</span>
-    </button>
-</section>
 
-<!-- Modal Wrapper Container (Hidden by default) -->
-<div id="request-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm hidden p-4">
-    <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-        <!-- Header -->
-        <div class="p-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-            <h3 class="font-bold text-white flex items-center"><i class="fa-solid fa-compact-disc text-indigo-400 mr-2 animate-spin"></i> Request Catalog</h3>
-            <button id="close-request-btn" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <!-- Socials & Interaction Sidebar -->
+            <aside class="col-md-4" id="contact">
+                <div class="card p-4 shadow-sm h-100">
+                    <h4 class="text-info fw-bold mb-3">Connect With Us</h4>
+                    <p class="small text-muted">Send song requests or join our community chatroom via our social channels.</p>
+                    <div class="d-grid gap-2 mb-4">
+                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-discord me-2 text-primary"></i> Join our Discord</a>
+                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-x-twitter me-2 text-white"></i> Follow on X</a>
+                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-instagram me-2 text-danger"></i> Instagram Updates</a>
+                    </div>
+                    <div class="bg-black p-3 rounded border border-secondary text-center">
+                        <h6 class="mb-1 text-success"><i class="fa-solid fa-users me-2"></i>Listener Milestones</h6>
+                        <p class="fs-4 fw-bold mb-0">1,240 <small class="fs-6 text-muted">Tuned In</small></p>
+                    </div>
+                </div>
+            </aside>
+            
         </div>
-        
-        <!-- Search Controls -->
-        <div class="p-4 bg-slate-950/50 border-b border-slate-800">
-            <div class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3.5 text-slate-500 text-sm"></i>
-                <input id="song-search-input" type="text" placeholder="Search song title or artist..." class="w-full bg-slate-900 border border-slate-800 focus:border-indigo-500 text-white rounded-xl pl-9 pr-4 py-2.5 text-sm outline-none transition">
-            </div>
-        </div>
-
-        <!-- Search Results Frame -->
-        <div id="search-results-container" class="p-4 overflow-y-auto space-y-2 flex-grow min-h-[200px] text-sm">
-            <p class="text-slate-500 text-center py-8">Type a keyword above to search our automation catalog.</p>
-        </div>
-    </div>
-</div>
-    </div>
     </main>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-600">
-        <p>&copy; 2026 Nova Wave. Powered by <a href="https://pages.cloudflare.com/" class="hover:underline text-slate-400">Cloudflare Pages</a>.</p>
+    <footer class="footer text-center text-muted border-top border-secondary">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 CloudRadio Station. Powered by Cloudflare Pages.</p>
+        </div>
     </footer>
 
-    <script src="app.js"></script>
+    <!-- Audio Player Logic Script -->
+    <script>
+        // REPLACE THIS URL with your live Icecast/Shoutcast/Direct mp3 stream link
+        // Note: Ensure your stream provider serves via HTTPS, or browsers will block it.
+        const STREAM_URL = "https://radiofrance.fr"; 
+
+        const audio = new Audio(STREAM_URL);
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const playerIcon = document.getElementById('player-icon');
+        const trackTitle = document.getElementById('track-title');
+        
+        let isPlaying = false;
+        audio.volume = 0.8; // Set default volume
+
+        function togglePlayback() {
+            if (isPlaying) {
+                // For live streams, pausing stops downloading data; reloading re-syncs to "Live"
+                audio.pause();
+                audio.src = ""; 
+                audio.load();
+                playerIcon.className = "fa-solid fa-play";
+                trackTitle.innerText = "Stream Paused";
+                isPlaying = false;
+            } else {
+                audio.src = STREAM_URL; // Reload stream to ensure real-time playback
+                trackTitle.innerText = "Connecting to Broadcast...";
+                audio.play()
+                    .then(() => {
+                        playerIcon.className = "fa-solid fa-pause";
+                        trackTitle.innerText = "Now Playing Live Audio";
+                        isPlaying = true;
+                    })
+                    .catch(error => {
+                        console.error("Playback failed:", error);
+                        trackTitle.innerText = "Error Loading Stream";
+                    });
+            }
+        }
+
+        function setVolume(val) {
+            audio.volume = val;
+        }
+    </script>
+
+    <!-- Bootstrap 5 JS Bundle via CDN -->
+    <script src="https://jsdelivr.net"></script>
 </body>
 </html>
+
