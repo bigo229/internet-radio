@@ -3,176 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudRadio - Live Internet Radio</title>
-    <!-- Bootstrap 5 CSS via CDN -->
+    <title>Cloud Radio - Live Stream</title>
+    <!-- Bootstrap 5 CSS CDN -->
     <link href="https://jsdelivr.net" rel="stylesheet">
-    <!-- FontAwesome for Player Icons -->
-    <link href="https://cloudflare.com" rel="stylesheet">
+    <!-- Bootstrap Icons CDN -->
+    <link href="https://jsdelivr.net" rel="stylesheet">
     <style>
-        body { background-color: #121212; color: #ffffff; }
-        .hero-section { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 60px 0; border-radius: 0 0 20px 20px; }
-        .card { background-color: #1e1e1e; border: 1px solid #2d2d2d; color: #fff; }
-        .player-btn { width: 70px; height: 70px; border-radius: 50%; font-size: 1.5rem; transition: transform 0.2s; }
-        .player-btn:hover { transform: scale(1.1); }
-        .footer { background-color: #0b0b0b; padding: 20px 0; font-size: 0.9rem; }
+        body {
+            background: linear-gradient(135deg, #1e1e2f 0%, #11111d 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+        .player-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+        }
+        .album-art {
+            width: 180px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .play-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            transition: transform 0.2s;
+        }
+        .play-btn:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-info" href="#"><i class="fa-solid fa-radio me-2"></i>CloudRadio</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#schedule">Schedule</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Hero / Live Player Section -->
-    <header id="home" class="hero-section text-center shadow-lg">
-        <div class="container py-4">
-            <h1 class="display-4 fw-bold mb-3">Live Streaming 24/7</h1>
-            <p class="lead mb-4">Your ultimate destination for curated electronic and lo-fi beats.</p>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
             
-            <!-- Audio Player Container -->
-            <div class="mx-auto p-4 card shadow" style="max-width: 450px;">
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://unsplash.com" alt="Album Art" class="rounded img-fluid me-3" style="width: 80px; height: 80px; object-fit: cover;">
-                    <div class="text-start">
-                        <span class="badge bg-danger mb-1"><i class="fa-solid fa-circle-dot fa-pulse me-1"></i> LIVE</span>
-                        <h5 class="mb-0 text-truncate" id="track-title">Loading Stream...</h5>
-                        <small class="text-muted" id="station-sub">CloudRadio Main Mix</small>
-                    </div>
+            <!-- Radio Player Card -->
+            <div class="player-card p-4 text-center shadow-lg">
+                <h2 class="h4 mb-3 text-uppercase tracking-wider text-muted" id="station-name">Loading Station...</h2>
+                
+                <!-- Album Art -->
+                <div class="my-4">
+                    <img id="album-art" src="https://unsplash.com" alt="Album Art" class="album-art">
                 </div>
+
+                <!-- Track Info -->
+                <div class="mb-4">
+                    <h3 class="h5 mb-1 text-truncate" id="track-title">Live Broadcast</h3>
+                    <p class="text-muted mb-0 text-truncate" id="track-artist">Please press play</p>
+                </div>
+
+                <!-- Audio Element -->
+                <audio id="radio-player" preload="none"></audio>
 
                 <!-- Controls -->
-                <div class="d-flex align-items-center justify-content-center gap-3">
-                    <button class="btn btn-info player-btn shadow" id="play-pause-btn" onclick="togglePlayback()">
-                        <i class="fa-solid fa-play" id="player-icon"></i>
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <button class="btn btn-primary play-btn shadow" id="play-toggle" onclick="togglePlayback()">
+                        <i class="bi bi-play-fill" id="play-icon"></i>
                     </button>
-                    <div class="d-flex align-items-center w-50 gap-2">
-                        <i class="fa-solid fa-volume-low text-muted"></i>
-                        <input type="range" class="form-range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" oninput="setVolume(this.value)">
-                        <i class="fa-solid fa-volume-high text-muted"></i>
-                    </div>
+                </div>
+
+                <!-- Live Listener Count Badge -->
+                <div class="mt-3">
+                    <span class="badge bg-danger rounded-pill px-3 py-2">
+                        <i class="bi bi-broadcast me-1"></i> LIVE: <span id="listeners">0</span> Listeners
+                    </span>
                 </div>
             </div>
+
         </div>
-    </header>
+    </div>
+</div>
 
-    <!-- Main Content Grid -->
-    <main class="container my-5">
-        <div class="row g-4">
-            
-            <!-- Schedule Section -->
-            <section class="col-md-8" id="schedule">
-                <h3 class="mb-4 text-info fw-bold border-bottom pb-2">Today's Broadcast Schedule</h3>
-                <div class="list-group shadow-sm">
-                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1 text-info">Morning Coffee Beats</h6>
-                            <small class="text-muted">Chill Lo-Fi instrumentals to start your day.</small>
-                        </div>
-                        <span class="badge bg-secondary">08:00 - 12:00</span>
-                    </div>
-                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center active">
-                        <div>
-                            <h6 class="mb-1 text-white">Afternoon Global Grooves</h6>
-                            <small class="text-light opacity-75">Deep house and electronic rhythms spinning now.</small>
-                        </div>
-                        <span class="badge bg-danger">Streaming Now</span>
-                    </div>
-                    <div class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1 text-info">Late Night Ambient Wave</h6>
-                            <small class="text-muted">Relaxing synth and soundscapes for winding down.</small>
-                        </div>
-                        <span class="badge bg-secondary">20:00 - 00:00</span>
-                    </div>
-                </div>
-            </section>
+<!-- Stream Logic API JavaScript -->
+<script>
+    // Configuration: Replace with your actual AzuraCast details
+    const AZURACAST_URL = "https://az1.cheapshoutcast365.co.uk"; 
+    const STATION_SHORTCODE = "cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040"; 
 
-            <!-- Socials & Interaction Sidebar -->
-            <aside class="col-md-4" id="contact">
-                <div class="card p-4 shadow-sm h-100">
-                    <h4 class="text-info fw-bold mb-3">Connect With Us</h4>
-                    <p class="small text-muted">Send song requests or join our community chatroom via our social channels.</p>
-                    <div class="d-grid gap-2 mb-4">
-                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-discord me-2 text-primary"></i> Join our Discord</a>
-                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-x-twitter me-2 text-white"></i> Follow on X</a>
-                        <a href="#" class="btn btn-outline-light text-start"><i class="fa-brands fa-instagram me-2 text-danger"></i> Instagram Updates</a>
-                    </div>
-                    <div class="bg-black p-3 rounded border border-secondary text-center">
-                        <h6 class="mb-1 text-success"><i class="fa-solid fa-users me-2"></i>Listener Milestones</h6>
-                        <p class="fs-4 fw-bold mb-0">1,240 <small class="fs-6 text-muted">Tuned In</small></p>
-                    </div>
-                </div>
-            </aside>
-            
-        </div>
-    </main>
+    // DOM Elements
+    const player = document.getElementById('radio-player');
+    const playToggle = document.getElementById('play-toggle');
+    const playIcon = document.getElementById('play-icon');
+    const stationName = document.getElementById('station-name');
+    const trackTitle = document.getElementById('track-title');
+    const trackArtist = document.getElementById('track-artist');
+    const albumArt = document.getElementById('album-art');
+    const listenersCount = document.getElementById('listeners');
 
-    <!-- Footer -->
-    <footer class="footer text-center text-muted border-top border-secondary">
-        <div class="container">
-            <p class="mb-0">&copy; 2026 CloudRadio Station. Powered by Cloudflare Pages.</p>
-        </div>
-    </footer>
+    let streamUrl = "";
+    let isPlaying = false;
 
-    <!-- Audio Player Logic Script -->
-    <script>
-        // REPLACE THIS URL with your live Icecast/Shoutcast/Direct mp3 stream link
-        // Note: Ensure your stream provider serves via HTTPS, or browsers will block it.
-        const STREAM_URL = "https://radiofrance.fr"; 
+    // Connect to AzuraCast Server Sent Events (SSE) for Real-time Data
+    function connectSse() {
+        const sseUrl = `${AZURACAST_URL}/api/live/nowplaying/sse?listen_to=${STATION_SHORTCODE}`;
+        const eventSource = new EventSource(sseUrl);
 
-        const audio = new Audio(STREAM_URL);
-        const playPauseBtn = document.getElementById('play-pause-btn');
-        const playerIcon = document.getElementById('player-icon');
-        const trackTitle = document.getElementById('track-title');
-        
-        let isPlaying = false;
-        audio.volume = 0.8; // Set default volume
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const station = data.station;
+            const nowPlaying = data.now_playing;
 
-        function togglePlayback() {
-            if (isPlaying) {
-                // For live streams, pausing stops downloading data; reloading re-syncs to "Live"
-                audio.pause();
-                audio.src = ""; 
-                audio.load();
-                playerIcon.className = "fa-solid fa-play";
-                trackTitle.innerText = "Stream Paused";
-                isPlaying = false;
-            } else {
-                audio.src = STREAM_URL; // Reload stream to ensure real-time playback
-                trackTitle.innerText = "Connecting to Broadcast...";
-                audio.play()
-                    .then(() => {
-                        playerIcon.className = "fa-solid fa-pause";
-                        trackTitle.innerText = "Now Playing Live Audio";
-                        isPlaying = true;
-                    })
-                    .catch(error => {
-                        console.error("Playback failed:", error);
-                        trackTitle.innerText = "Error Loading Stream";
-                    });
+            // Update DOM with live metadata
+            stationName.innerText = station.name;
+            trackTitle.innerText = nowPlaying.song.title;
+            trackArtist.innerText = nowPlaying.song.artist;
+            albumArt.src = nowPlaying.song.art ? nowPlaying.song.art : albumArt.src;
+            listenersCount.innerText = data.listeners.total;
+
+            // Set the audio stream URL dynamically via Proxied Mount URL
+            if (!streamUrl && station.mounts.length > 0) {
+                streamUrl = station.mounts[0].url;
+                player.src = streamUrl;
             }
-        }
+        };
 
-        function setVolume(val) {
-            audio.volume = val;
-        }
-    </script>
+        eventSource.onerror = function() {
+            console.log("SSE connection lost. Reconnecting...");
+        };
+    }
 
-    <!-- Bootstrap 5 JS Bundle via CDN -->
-    <script src="https://jsdelivr.net"></script>
+    // Toggle Play/Pause Functionality
+    function togglePlayback() {
+        if (!isPlaying) {
+            // Reload stream asset to prevent playing old cached audio buffer
+            player.src = streamUrl; 
+            player.play()
+                .then(() => {
+                    isPlaying = true;
+                    playIcon.className = "bi bi-pause-fill";
+                    playToggle.classList.replace('btn-primary', 'btn-danger');
+                })
+                .catch(err => console.error("Playback failed:", err));
+        } else {
+            player.pause();
+            player.src = ""; // Flush stream buffer
+            isPlaying = false;
+            playIcon.className = "bi bi-play-fill";
+            playToggle.classList.replace('btn-danger', 'btn-primary');
+        }
+    }
+
+    // Initialize Metadata Pull on Load
+    connectSse();
+</script>
+
+<script src="https://jsdelivr.net"></script>
 </body>
 </html>
+
 
