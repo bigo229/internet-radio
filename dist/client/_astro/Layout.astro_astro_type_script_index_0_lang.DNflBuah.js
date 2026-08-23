@@ -1,0 +1,1 @@
+import{n as e,o as t}from"./radio.Dh_CC9Cn.js";document.addEventListener(`click`,n=>{let r=n.target.closest(`[data-station]`);if(!r)return;let i=t.find(e=>e.id===r.dataset.station);i&&(n.preventDefault(),e(i,!0))});
