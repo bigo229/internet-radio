@@ -1,0 +1,82 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+const date = post.data.pubDate.toLocaleDateString('en-US', {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+});
+---
+
+<article class="blog-card">
+	<a href={`/blog/${post.id}`} class="blog-card-link">
+		<div class="bc-top">
+			<span class="bc-date">{date}</span>
+			{post.data.tags[0] && <span class="bc-tag">{post.data.tags[0]}</span>}
+		</div>
+		<h3 class="bc-title">{post.data.title}</h3>
+		<p class="bc-excerpt muted">{post.data.description}</p>
+		<span class="bc-author">By {post.data.author}</span>
+	</a>
+</article>
+
+<style>
+	.blog-card {
+		border-radius: var(--radius);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		box-shadow: var(--shadow);
+		transition:
+			transform 0.18s ease,
+			border-color 0.2s ease;
+	}
+	.blog-card:hover {
+		transform: translateY(-4px);
+		border-color: var(--border-strong);
+	}
+	.blog-card-link {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		padding: 22px;
+		height: 100%;
+	}
+	.bc-top {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.bc-date {
+		font-size: 0.78rem;
+		color: var(--faint);
+		font-variant-numeric: tabular-nums;
+	}
+	.bc-tag {
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent-3);
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+	}
+	.bc-title {
+		font-size: 1.25rem;
+		line-height: 1.25;
+	}
+	.bc-excerpt {
+		font-size: 0.92rem;
+		line-height: 1.5;
+		flex: 1;
+	}
+	.bc-author {
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+</style>

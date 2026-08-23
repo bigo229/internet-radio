@@ -1,0 +1,147 @@
+---
+import type { Station } from '../config';
+
+interface Props {
+	station?: Station;
+}
+const { station } = Astro.props;
+const endpoint = station ? `/api/station/${station.id}/nowplaying.json` : '/api/nowplaying.json';
+---
+
+<section
+	class="now-playing card"
+	aria-live="polite"
+	data-station={station?.id}
+	style={station ? `--accent:${station.accent}` : ''}
+>
+	<div class="np-head">
+		<span class="live-dot" id="np-dot"></span>
+		<span>NOW PLAYING</span>
+	</div>
+
+	<div class="np-art" aria-hidden="true">
+		<span class="eq" id="np-eq"><i></i><i></i><i></i><i></i><i></i></span>
+	</div>
+
+	<div class="np-text">
+		<h2 id="np-title" class="gradient-text">Live Stream</h2>
+		<p id="np-artist" class="muted">Connecting to the studio…</p>
+	</div>
+
+	<button class="btn primary np-play" id="np-play">
+		<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+			<path d="M8 5v14l11-7z" />
+		</svg>
+		<span id="np-play-label">Listen Live</span>
+	</button>
+</section>
+
+<script>
+	import { subscribe, setStation } from '../scripts/radio';
+	import { STATIONS } from '../config';
+
+	const section = document.querySelector<HTMLElement>('.now-playing');
+	const stationId = section?.dataset.station || '';
+	const endpoint = stationId
+		? `/api/station/${stationId}/nowplaying.json`
+		: '/api/nowplaying.json';
+
+	const titleEl = document.getElementById('np-title');
+	const artistEl = document.getElementById('np-artist');
+	const playBtn = document.getElementById('np-play');
+	const playLabel = document.getElementById('np-play-label');
+	const eq = document.getElementById('np-eq');
+	const dot = document.getElementById('np-dot');
+
+	function apply(d: { artist?: string; title?: string }) {
+		if (titleEl) titleEl.textContent = d.title || 'Live Stream';
+		if (artistEl) artistEl.textContent = d.artist || '';
+	}
+
+	playBtn?.addEventListener('click', () => {
+		const st = STATIONS.find((s) => s.id === stationId);
+		if (st) setStation(st, true);
+	});
+
+	async function poll() {
+		try {
+			const res = await fetch(endpoint, { cache: 'no-store' });
+			const d = (await res.json()) as { artist?: string; title?: string };
+			if (d?.title || d?.artist) apply(d);
+		} catch {
+			/* offline */
+		}
+	}
+	void poll();
+	window.setInterval(poll, 15000);
+
+	subscribe((s) => {
+		const isThis = s.station?.id === stationId;
+		if (playLabel) playLabel.textContent = isThis && s.playing ? 'Pause' : 'Listen Live';
+		playBtn?.classList.toggle('primary', !(isThis && s.playing));
+		eq?.classList.toggle('playing', isThis && s.playing);
+		dot?.classList.toggle('on', isThis && s.playing);
+		if (isThis && (s.track.title || s.track.artist)) apply(s.track);
+	});
+</script>
+
+<style>
+	.now-playing {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		text-align: center;
+		gap: 18px;
+		padding: 34px;
+		background:
+			radial-gradient(120% 120% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+			var(--surface);
+	}
+	.np-head {
+		display: inline-flex;
+		align-items: center;
+		gap: 9px;
+		font-size: 0.74rem;
+		letter-spacing: 0.2em;
+		font-weight: 700;
+		color: var(--muted);
+	}
+	.live-dot {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: var(--faint);
+	}
+	.live-dot.on {
+		background: #34d399;
+		box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.22);
+		animation: pulse 1.6s ease-in-out infinite;
+	}
+	@keyframes pulse {
+		50% {
+			box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
+		}
+	}
+	.np-art {
+		width: 120px;
+		height: 120px;
+		border-radius: 26px;
+		display: grid;
+		place-items: center;
+		background: var(--grad-soft);
+		border: 1px solid var(--border-strong);
+	}
+	.np-art .eq {
+		height: 46px;
+	}
+	.np-art .eq i {
+		width: 7px;
+	}
+	.np-text h2 {
+		font-size: clamp(1.5rem, 4vw, 2.3rem);
+	}
+	.np-text p {
+		margin: 8px 0 0;
+		font-size: 1rem;
+	}
+</style>

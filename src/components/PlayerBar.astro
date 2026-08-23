@@ -1,0 +1,274 @@
+---
+import { SITE, STATIONS } from '../config';
+---
+
+<div class="player-bar" id="player-bar">
+	<div class="pb-left">
+		<div class="pb-art" aria-hidden="true">
+			<span class="eq playing" id="pb-eq"><i></i><i></i><i></i><i></i><i></i></span>
+		</div>
+		<div class="pb-meta">
+			<span class="pb-status" id="pb-status">OFFLINE</span>
+			<select id="pb-stations" class="pb-stations" aria-label="Select station">
+				{
+					STATIONS.map((s) => (
+						<option value={s.id}>{s.name}</option>
+					))
+				}
+			</select>
+			<span class="pb-track" id="pb-track">{SITE.name}</span>
+			<span class="pb-artist" id="pb-artist">Tap play to start the stream</span>
+		</div>
+	</div>
+
+	<div class="pb-center">
+		<button class="pb-play" id="pb-play" aria-label="Play or pause stream">
+			<svg class="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+				<path d="M8 5v14l11-7z" />
+			</svg>
+			<svg class="icon-pause" width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+				<path d="M6 5h4v14H6zM14 5h4v14h-4z" />
+			</svg>
+		</button>
+	</div>
+
+	<div class="pb-right">
+		<button class="pb-mute" id="pb-mute" aria-label="Mute">
+			<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+				<path
+					d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"
+				></path>
+			</svg>
+		</button>
+		<input
+			type="range"
+			id="pb-volume"
+			min="0"
+			max="1"
+			step="0.01"
+			value="0.8"
+			aria-label="Volume"
+		/>
+	</div>
+
+	<audio id="radio-audio" preload="none"></audio>
+</div>
+
+<script>
+	import { initRadio, subscribe, toggle, setVolume, setStation, getStation } from '../scripts/radio';
+	import { STATIONS } from '../config';
+
+	const audio = document.getElementById('radio-audio') as HTMLAudioElement | null;
+	const bar = document.getElementById('player-bar');
+	const playBtn = document.getElementById('pb-play');
+	const statusEl = document.getElementById('pb-status');
+	const trackEl = document.getElementById('pb-track');
+	const artistEl = document.getElementById('pb-artist');
+	const eq = document.getElementById('pb-eq');
+	const volume = document.getElementById('pb-volume') as HTMLInputElement | null;
+	const mute = document.getElementById('pb-mute');
+	const stationsSel = document.getElementById('pb-stations') as HTMLSelectElement | null;
+
+	if (audio) initRadio(audio);
+
+	playBtn?.addEventListener('click', () => toggle());
+	mute?.addEventListener('click', () => {
+		if (!audio) return;
+		audio.muted = !audio.muted;
+		mute.classList.toggle('muted', audio.muted);
+	});
+	volume?.addEventListener('input', () => {
+		if (audio) audio.muted = false;
+		mute?.classList.remove('muted');
+		setVolume(parseFloat(volume.value));
+	});
+	stationsSel?.addEventListener('change', () => {
+		const st = STATIONS.find((s) => s.id === stationsSel.value);
+		if (st) setStation(st, false);
+	});
+
+	subscribe((s) => {
+		if (trackEl) trackEl.textContent = s.track.title || 'Live Stream';
+		if (artistEl) artistEl.textContent = s.track.artist || '';
+		if (statusEl)
+			statusEl.textContent = s.buffering ? 'BUFFERING' : s.playing ? 'ON AIR' : 'OFFLINE';
+		if (stationsSel && s.station) stationsSel.value = s.station.id;
+		bar?.classList.toggle('is-playing', s.playing);
+		eq?.classList.toggle('playing', s.playing);
+	});
+</script>
+
+<style>
+	.player-bar {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 60;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 18px;
+		padding: 14px 22px calc(14px + env(safe-area-inset-bottom));
+		background: var(--player-bg);
+		border-top: 1px solid var(--border-strong);
+		backdrop-filter: blur(18px);
+		-webkit-backdrop-filter: blur(18px);
+		box-shadow: 0 -20px 50px -25px rgba(0, 0, 0, 0.9);
+	}
+	.pb-left {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		min-width: 0;
+	}
+	.pb-art {
+		width: 46px;
+		height: 46px;
+		border-radius: 12px;
+		display: grid;
+		place-items: center;
+		background: var(--grad-soft);
+		border: 1px solid var(--border);
+		flex: none;
+	}
+	.pb-meta {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		line-height: 1.25;
+	}
+	.pb-status {
+		font-size: 0.68rem;
+		letter-spacing: 0.16em;
+		font-weight: 700;
+		color: var(--faint);
+	}
+	.is-playing .pb-status {
+		color: var(--accent-2);
+	}
+	.pb-stations {
+		appearance: none;
+		-webkit-appearance: none;
+		border: none;
+		background: transparent;
+		color: var(--text);
+		font-family: var(--font-head);
+		font-weight: 600;
+		font-size: 0.95rem;
+		padding: 0;
+		margin: 0;
+		cursor: pointer;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.pb-stations:focus {
+		outline: none;
+	}
+	.pb-stations option {
+		color: #16121f;
+		background: #fff;
+	}
+	.pb-track {
+		font-weight: 600;
+		font-size: 0.95rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.pb-artist {
+		font-size: 0.82rem;
+		color: var(--muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.pb-center {
+		display: grid;
+		place-items: center;
+	}
+	.pb-play {
+		width: 52px;
+		height: 52px;
+		border-radius: 50%;
+		border: none;
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+		color: var(--on-accent);
+		background: var(--grad);
+		box-shadow: 0 10px 30px -10px rgba(236, 72, 153, 0.7);
+		transition: transform 0.15s ease;
+	}
+	.pb-play:hover {
+		transform: scale(1.06);
+	}
+	.pb-play .icon-pause {
+		display: none;
+	}
+	.is-playing .pb-play .icon-play {
+		display: none;
+	}
+	.is-playing .pb-play .icon-pause {
+		display: block;
+	}
+
+	.pb-right {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 10px;
+	}
+	.pb-mute {
+		background: transparent;
+		border: none;
+		color: var(--muted);
+		cursor: pointer;
+		display: grid;
+		place-items: center;
+		padding: 6px;
+		border-radius: 8px;
+	}
+	.pb-mute:hover {
+		color: var(--text);
+	}
+	.pb-mute.muted {
+		color: var(--accent-2);
+	}
+	#pb-volume {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 120px;
+		height: 5px;
+		border-radius: 999px;
+		background: rgba(255, 255, 255, 0.16);
+		cursor: pointer;
+	}
+	#pb-volume::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 14px;
+		height: 14px;
+		border-radius: 50%;
+		background: var(--text);
+		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.25);
+	}
+	#pb-volume::-moz-range-thumb {
+		width: 14px;
+		height: 14px;
+		border: none;
+		border-radius: 50%;
+		background: var(--text);
+	}
+
+	@media (max-width: 720px) {
+		.player-bar {
+			grid-template-columns: 1fr auto;
+		}
+		.pb-right {
+			display: none;
+		}
+	}
+</style>

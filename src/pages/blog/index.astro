@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import { SITE } from '../../config';
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+---
+
+<Layout title="Blog" description={`News and notes from ${SITE.name}.`}>
+	<section class="section">
+		<div class="container">
+			<div class="blog-hero">
+				<span class="eyebrow"><span class="dot"></span> The Blog</span>
+				<h1 class="page-title">Notes from <span class="gradient-text">{SITE.name}</span></h1>
+				<p class="muted lead">
+					New music, station news and the occasional behind-the-scenes peek.
+				</p>
+			</div>
+
+			{
+				posts.length ? (
+					<div class="blog-grid">
+						{posts.map((p) => <BlogCard post={p} />)}
+					</div>
+				) : (
+					<p class="muted">No posts yet — check back soon.</p>
+				)
+			}
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.blog-hero {
+		margin-bottom: 32px;
+	}
+	.page-title {
+		font-size: clamp(2rem, 6vw, 3.4rem);
+		margin: 12px 0 10px;
+	}
+	.lead {
+		font-size: 1.05rem;
+		line-height: 1.6;
+		max-width: 620px;
+	}
+	.blog-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 18px;
+	}
+</style>

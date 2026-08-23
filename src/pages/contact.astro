@@ -1,0 +1,184 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { SITE } from '../config';
+---
+
+<Layout title="Contact" description="Get in touch with the Pulse Radio team.">
+	<section class="section">
+		<div class="container narrow">
+			<span class="eyebrow"><span class="dot"></span> Contact</span>
+			<h1 class="page-title">Say <span class="gradient-text">hello</span></h1>
+			<p class="muted lead">
+				Booking, artist submissions, partnerships or press — drop us a line and we'll get back to
+				you.
+			</p>
+
+			<div class="contact-grid">
+				<form class="card form" id="contact-form" novalidate>
+					<div class="row">
+						<div class="field">
+							<label for="name">Name *</label>
+							<input id="name" name="name" type="text" placeholder="Your name" required />
+						</div>
+						<div class="field">
+							<label for="email">Email *</label>
+							<input id="email" name="email" type="email" placeholder="you@email.com" required />
+						</div>
+					</div>
+
+					<div class="field">
+						<label for="subject">Subject</label>
+						<select id="subject" name="subject">
+							<option>General</option>
+							<option>Artist submission</option>
+							<option>Booking / events</option>
+							<option>Partnership / press</option>
+							<option>Technical issue</option>
+						</select>
+					</div>
+
+					<div class="field">
+						<label for="message">Message *</label>
+						<textarea id="message" name="message" placeholder="Tell us more…" required></textarea>
+					</div>
+
+					<button class="btn primary" type="submit" id="submit-btn">Send Message</button>
+					<div class="alert" id="alert" role="status"></div>
+				</form>
+
+				<aside class="card info">
+					<h3>Other ways to reach us</h3>
+					<ul class="info-list">
+						<li>
+							<span class="info-label">Email</span>
+							<a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>
+						</li>
+						<li>
+							<span class="info-label">Studio</span>
+							<span>Remote · everywhere with Wi-Fi</span>
+						</li>
+						<li>
+							<span class="info-label">Social</span>
+							<div class="info-social">
+								<a href={SITE.socials.twitter} target="_blank" rel="noopener">Twitter</a>
+								<a href={SITE.socials.instagram} target="_blank" rel="noopener">Instagram</a>
+								<a href={SITE.socials.discord} target="_blank" rel="noopener">Discord</a>
+							</div>
+						</li>
+					</ul>
+				</aside>
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	const form = document.getElementById('contact-form') as HTMLFormElement | null;
+	const alert = document.getElementById('alert');
+	const btn = document.getElementById('submit-btn') as HTMLButtonElement | null;
+
+	form?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		if (!form.reportValidity()) return;
+
+		const data = Object.fromEntries(new FormData(form).entries());
+		if (alert) {
+			alert.className = 'alert';
+			alert.textContent = '';
+		}
+		if (btn) {
+			btn.disabled = true;
+			btn.textContent = 'Sending…';
+		}
+
+		try {
+			const res = await fetch('/api/contact.json', {
+				method: 'POST',
+				headers: { 'content-type': 'application/json' },
+				body: JSON.stringify(data),
+			});
+			const json = await res.json();
+			if (!res.ok || json.error) throw new Error(json.error || 'Something went wrong');
+
+			if (alert) {
+				alert.className = 'alert show ok';
+				alert.textContent = "Message sent! We'll be in touch soon.";
+			}
+			form.reset();
+		} catch (err) {
+			if (alert) {
+				alert.className = 'alert show err';
+				alert.textContent = err instanceof Error ? err.message : 'Message failed.';
+			}
+		} finally {
+			if (btn) {
+				btn.disabled = false;
+				btn.textContent = 'Send Message';
+			}
+		}
+	});
+</script>
+
+<style>
+	.narrow {
+		max-width: 860px;
+	}
+	.page-title {
+		font-size: clamp(2rem, 6vw, 3.2rem);
+		margin: 14px 0 10px;
+	}
+	.lead {
+		font-size: 1.05rem;
+		line-height: 1.6;
+		margin-bottom: 28px;
+	}
+	.contact-grid {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 22px;
+		align-items: start;
+	}
+	.row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 16px;
+	}
+	.info h3 {
+		margin-bottom: 14px;
+	}
+	.info-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 18px;
+	}
+	.info-list li {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.info-label {
+		font-size: 0.74rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--faint);
+	}
+	.info-social {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+	.info-social a {
+		color: var(--accent-3);
+	}
+	@media (max-width: 720px) {
+		.contact-grid {
+			grid-template-columns: 1fr;
+		}
+		.row {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

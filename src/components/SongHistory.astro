@@ -1,0 +1,210 @@
+---
+interface Props {
+	endpoint: string;
+	limit?: number;
+	title?: string;
+	compact?: boolean;
+	/** Href for the "view all" link, or false to hide it. */
+	viewAll?: string | false;
+}
+
+const {
+	endpoint,
+	limit = 20,
+	title = 'Recently Played',
+	compact = false,
+	viewAll = '/stations',
+} = Astro.props;
+---
+
+<section class:list={['song-history', { compact }]}>
+	<div class="sh-head">
+		<h3>{title}</h3>
+		{
+			viewAll && (
+				<a class="sh-all" href={viewAll}>
+					View all &rarr;
+				</a>
+			)
+		}
+	</div>
+	<ul class="sh-list" data-limit={limit} data-endpoint={endpoint}>
+		<li class="sh-empty">Loading history&hellip;</li>
+	</ul>
+</section>
+
+<script>
+	function escapeHtml(s: string): string {
+		return s.replace(
+			/[&<>"']/g,
+			(c) =>
+				({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string
+		);
+	}
+
+	function render(list: HTMLUListElement, items: { artist: string; title: string; at: string }[]) {
+		if (!items.length) {
+			list.innerHTML = '<li class="sh-empty">No tracks played yet.</li>';
+			return;
+		}
+		list.innerHTML = items
+			.map((t, i) => {
+				const time = new Date(t.at).toLocaleTimeString([], {
+					hour: '2-digit',
+					minute: '2-digit',
+				});
+				const current = i === 0 ? ' current' : '';
+				return `<li class="sh-row${current}">
+					<span class="sh-time">${time}</span>
+					<span class="sh-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+					<span class="sh-meta">
+						<span class="sh-title">${escapeHtml(t.title)}</span>
+						<span class="sh-artist">${escapeHtml(t.artist)}</span>
+					</span>
+				</li>`;
+			})
+			.join('');
+	}
+
+	async function loadList(list: HTMLUListElement) {
+		const limit = Number(list.dataset.limit) || 20;
+		const endpoint = list.dataset.endpoint || '/api/history.json';
+		try {
+			const res = await fetch(endpoint, { cache: 'no-store' });
+			if (!res.ok) return;
+			const json = await res.json();
+			// Station endpoint returns { history: [...] } (most-recent first);
+			// the legacy endpoint returns a plain array.
+			const items = Array.isArray(json)
+				? json.slice(-limit).reverse()
+				: (json.history || []).slice(0, limit);
+			render(list, items);
+		} catch {
+			/* offline */
+		}
+	}
+
+	document.querySelectorAll<HTMLUListElement>('.sh-list').forEach((list) => {
+		void loadList(list);
+		if (document.visibilityState === 'visible') {
+			window.setInterval(() => {
+				if (document.visibilityState === 'visible') void loadList(list);
+			}, 25000);
+		}
+	});
+</script>
+
+<style is:global>
+	.song-history {
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+	}
+	.sh-head {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 12px;
+	}
+	.sh-head h3 {
+		font-size: 1.15rem;
+	}
+	.sh-all {
+		font-size: 0.85rem;
+		color: var(--accent-3);
+		font-weight: 500;
+	}
+	.sh-all:hover {
+		text-decoration: underline;
+	}
+	.sh-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+		max-height: 420px;
+		overflow-y: auto;
+	}
+	.song-history.compact .sh-list {
+		max-height: 320px;
+	}
+	.sh-row {
+		display: grid;
+		grid-template-columns: 56px 18px 1fr;
+		align-items: center;
+		gap: 12px;
+		padding: 10px 12px;
+		border-radius: var(--radius-sm);
+		transition: background 0.18s ease;
+	}
+	.sh-row:hover {
+		background: var(--surface);
+	}
+	.sh-time {
+		font-size: 0.78rem;
+		color: var(--faint);
+		font-variant-numeric: tabular-nums;
+	}
+	.sh-eq {
+		display: inline-flex;
+		align-items: flex-end;
+		gap: 2px;
+		height: 14px;
+		opacity: 0;
+	}
+	.sh-eq i {
+		width: 3px;
+		height: 30%;
+		border-radius: 3px;
+		background: var(--accent-2);
+	}
+	.sh-meta {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+		line-height: 1.3;
+	}
+	.sh-title {
+		font-weight: 600;
+		font-size: 0.95rem;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.sh-artist {
+		font-size: 0.82rem;
+		color: var(--muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.sh-empty {
+		padding: 18px 12px;
+		color: var(--faint);
+		font-size: 0.9rem;
+	}
+	.sh-row.current {
+		background: var(--grad-soft);
+		border: 1px solid var(--border);
+	}
+	.sh-row.current .sh-title {
+		background: var(--grad);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	.sh-row.current .sh-eq {
+		opacity: 1;
+	}
+	.sh-row.current .sh-eq i {
+		animation: eq 1s ease-in-out infinite;
+	}
+	.sh-row.current .sh-eq i:nth-child(2) {
+		animation-delay: 0.2s;
+	}
+	.sh-row.current .sh-eq i:nth-child(3) {
+		animation-delay: 0.4s;
+	}
+</style>

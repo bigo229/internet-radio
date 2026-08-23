@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NowPlaying from '../components/NowPlaying.astro';
+import SongHistory from '../components/SongHistory.astro';
+import StationCard from '../components/StationCard.astro';
+import { SITE, STATIONS } from '../config';
+
+const featured = STATIONS[0];
+---
+
+<Layout>
+	<section class="hero">
+		<div class="container hero-inner">
+			<span class="eyebrow"><span class="dot"></span> {SITE.name} · 24/7 Live</span>
+			<h1 class="hero-title">
+				Sound that <span class="gradient-text">moves</span><br />
+				you, all day long.
+			</h1>
+			<p class="hero-sub muted">{SITE.description}</p>
+			<div class="hero-actions">
+				<button class="btn primary" data-station={featured.id}>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+						<path d="M8 5v14l11-7z" />
+					</svg>
+					Listen to {featured.name}
+				</button>
+				<a class="btn" href="/stations">All Stations</a>
+				<a class="btn" href="/request">Request a Song</a>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container">
+			<div class="section-head">
+				<h2>Our Stations</h2>
+				<p class="muted">Six curated streams. Pick a vibe and press play.</p>
+			</div>
+			<div class="stations-grid">
+				{STATIONS.map((s) => <StationCard station={s} />)}
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container home-grid">
+			<NowPlaying station={featured} />
+			<aside class="side card">
+				<h3>On {featured.name} right now</h3>
+				<p class="muted">A rolling log of what's been spinning on our featured stream.</p>
+				<SongHistory
+					endpoint={`/api/station/${featured.id}/nowplaying.json`}
+					title="Recently Played"
+					limit={12}
+					viewAll={`/stations/${featured.id}`}
+				/>
+				<div class="divider"></div>
+				<h3>Want to get in touch?</h3>
+				<p class="muted">Booking, submissions, partnerships or just saying hi.</p>
+				<a class="btn" href="/contact">Contact Us</a>
+			</aside>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.hero {
+		padding-block: 88px 36px;
+	}
+	.hero-inner {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 20px;
+	}
+	.hero-title {
+		font-size: clamp(2.4rem, 7vw, 4.4rem);
+		font-weight: 700;
+	}
+	.hero-sub {
+		font-size: 1.12rem;
+		max-width: 560px;
+		line-height: 1.6;
+	}
+	.hero-actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+	}
+
+	.section-head {
+		margin-bottom: 24px;
+	}
+	.section-head h2 {
+		font-size: clamp(1.6rem, 4vw, 2.2rem);
+	}
+	.section-head p {
+		margin: 6px 0 0;
+	}
+
+	.stations-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 18px;
+	}
+
+	.home-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 22px;
+		align-items: stretch;
+	}
+	.side {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.side h3 {
+		font-size: 1.15rem;
+	}
+	.side .btn {
+		align-self: flex-start;
+	}
+	.divider {
+		height: 1px;
+		background: var(--border);
+		margin: 8px 0;
+	}
+
+	@media (max-width: 860px) {
+		.home-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

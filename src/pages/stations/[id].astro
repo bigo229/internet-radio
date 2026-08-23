@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import NowPlaying from '../../components/NowPlaying.astro';
+import SongHistory from '../../components/SongHistory.astro';
+import RequestForm from '../../components/RequestForm.astro';
+import { SITE, STATIONS } from '../../config';
+
+const { id } = Astro.params;
+const station = STATIONS.find((s) => s.id === id);
+if (!station) return Astro.redirect('/stations');
+---
+
+<Layout title={`${station.name} — Now Playing`} description={`Listen to ${station.name} on ${SITE.name}.`}>
+	<section class="station-hero" style={`--accent:${station.accent}`}>
+		<span class="eyebrow"><span class="dot"></span> {station.genre}</span>
+		<h1 class="sh-title gradient-text">{station.name}</h1>
+		<p class="muted">{station.description}</p>
+		<div class="sh-actions">
+			<button class="btn primary" data-station={station.id}>
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+					<path d="M8 5v14l11-7z" />
+				</svg>
+				Listen Live
+			</button>
+			<a class="btn" href="/stations">All Stations</a>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container station-grid">
+			<NowPlaying station={station} />
+			<div class="side">
+				<SongHistory
+					endpoint={`/api/station/${station.id}/nowplaying.json`}
+					title="Recently Played"
+					limit={14}
+					viewAll={false}
+				/>
+			</div>
+		</div>
+	</section>
+
+	<section class="section">
+		<div class="container narrow">
+			<RequestForm station={station} />
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.station-hero {
+		padding: 72px 0 8px;
+	}
+	.sh-title {
+		font-size: clamp(2.2rem, 7vw, 4rem);
+		margin: 12px 0 8px;
+	}
+	.station-hero p {
+		font-size: 1.05rem;
+		max-width: 560px;
+	}
+	.sh-actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		margin-top: 18px;
+	}
+	.station-grid {
+		display: grid;
+		grid-template-columns: 1.4fr 1fr;
+		gap: 22px;
+		align-items: stretch;
+	}
+	.side {
+		display: flex;
+		flex-direction: column;
+	}
+	.narrow {
+		max-width: 760px;
+	}
+	@media (max-width: 860px) {
+		.station-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>

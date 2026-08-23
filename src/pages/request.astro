@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+import RequestForm from '../components/RequestForm.astro';
+import { SITE, STATIONS } from '../config';
+
+const first = STATIONS[0];
+---
+
+<Layout title="Request a Song" description="Request a track on one of our AzuraCast stations.">
+	<section class="section">
+		<div class="container narrow">
+			<span class="eyebrow"><span class="dot"></span> Song Requests</span>
+			<h1 class="page-title">Request a <span class="gradient-text">track</span></h1>
+			<p class="muted lead">
+				Pick a station, search its library and send a request straight to that stream's DJ.
+			</p>
+
+			<div class="field req-pick">
+				<label for="req-station">Station</label>
+				<select id="req-station">
+					{
+						STATIONS.map((s) => (
+							<option value={s.id}>{s.name} — {s.genre}</option>
+						))
+					}
+				</select>
+			</div>
+
+			<div class="req-forms">
+				{
+					STATIONS.map((s) => (
+						<div class="req-panel" data-station-id={s.id} style={s.id === first.id ? '' : 'display:none'}>
+							<RequestForm station={s} />
+						</div>
+					))
+				}
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<script>
+	const sel = document.getElementById('req-station');
+	const panels = document.querySelectorAll<HTMLElement>('.req-panel');
+	sel?.addEventListener('change', () => {
+		const value = sel.value;
+		panels.forEach((p) => {
+			p.style.display = p.dataset.stationId === value ? '' : 'none';
+		});
+	});
+</script>
+
+<style>
+	.narrow {
+		max-width: 760px;
+	}
+	.page-title {
+		font-size: clamp(2rem, 6vw, 3.2rem);
+		margin: 14px 0 10px;
+	}
+	.lead {
+		font-size: 1.05rem;
+		line-height: 1.6;
+		margin-bottom: 24px;
+	}
+	.req-pick {
+		margin-bottom: 22px;
+	}
+	.req-pick select {
+		width: 100%;
+		padding: 14px 16px;
+		border-radius: var(--radius-sm);
+		background: var(--input-bg);
+		border: 1px solid var(--border);
+		color: var(--text);
+		font: inherit;
+	}
+	.req-pick select:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+	}
+</style>

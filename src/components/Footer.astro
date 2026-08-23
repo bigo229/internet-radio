@@ -1,0 +1,107 @@
+---
+import { SITE } from '../config';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+	<div class="container footer-inner">
+		<div class="footer-brand">
+			<span class="brand-mark" aria-hidden="true"></span>
+			<div>
+				<strong>{SITE.name}</strong>
+				<p class="muted">{SITE.tagline}</p>
+			</div>
+		</div>
+
+		<div class="footer-cols">
+			<div>
+				<h4>Listen</h4>
+				<a href="/">Home</a>
+				<a href="/request">Request a Song</a>
+				<a href="/contact">Contact</a>
+			</div>
+			<div>
+				<h4>Connect</h4>
+				<a href={SITE.socials.twitter} target="_blank" rel="noopener">Twitter</a>
+				<a href={SITE.socials.instagram} target="_blank" rel="noopener">Instagram</a>
+				<a href={SITE.socials.discord} target="_blank" rel="noopener">Discord</a>
+			</div>
+			<div>
+				<h4>Studio</h4>
+				<a href={`mailto:${SITE.contactEmail}`}>{SITE.contactEmail}</a>
+			</div>
+		</div>
+	</div>
+	<div class="container footer-bottom">
+		<span>© {year} {SITE.name}. All rights reserved.</span>
+		<span class="muted">Built with Astro</span>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		border-top: 1px solid var(--border);
+		background: var(--footer-bg);
+		padding-block: 40px 28px;
+	}
+	.footer-inner {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 36px;
+		justify-content: space-between;
+	}
+	.footer-brand {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		max-width: 280px;
+	}
+	.brand-mark {
+		width: 30px;
+		height: 30px;
+		border-radius: 9px;
+		background: var(--grad);
+		flex: none;
+	}
+	.footer-brand strong {
+		font-family: var(--font-head);
+		font-size: 1.05rem;
+	}
+	.footer-brand p {
+		margin: 2px 0 0;
+		font-size: 0.88rem;
+	}
+	.footer-cols {
+		display: flex;
+		gap: 48px;
+		flex-wrap: wrap;
+	}
+	.footer-cols h4 {
+		font-size: 0.78rem;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--faint);
+		margin: 0 0 12px;
+	}
+	.footer-cols a {
+		display: block;
+		color: var(--muted);
+		font-size: 0.9rem;
+		padding: 4px 0;
+		transition: color 0.2s ease;
+	}
+	.footer-cols a:hover {
+		color: var(--text);
+	}
+	.footer-bottom {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-top: 32px;
+		padding-top: 18px;
+		border-top: 1px solid var(--border);
+		font-size: 0.82rem;
+		color: var(--muted);
+	}
+</style>

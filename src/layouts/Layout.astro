@@ -1,0 +1,80 @@
+---
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import PlayerBar from '../components/PlayerBar.astro';
+import { SITE } from '../config';
+import '../styles/global.css';
+
+interface Props {
+	title?: string;
+	description?: string;
+}
+
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.name}` : `${SITE.name} — ${SITE.tagline}`;
+const pageDesc = description ?? SITE.description;
+---
+
+<!doctype html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script is:inline>
+			(function () {
+				try {
+					var t = localStorage.getItem('theme');
+					if (t !== 'light' && t !== 'dark') {
+						t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+					}
+					document.documentElement.setAttribute('data-theme', t);
+				} catch (e) {
+					document.documentElement.setAttribute('data-theme', 'dark');
+				}
+			})();
+		</script>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{pageTitle}</title>
+		<meta name="description" content={pageDesc} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDesc} />
+		<meta property="og:type" content="website" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<Navbar />
+		<main>
+			<slot />
+		</main>
+		<Footer />
+		<PlayerBar />
+	</body>
+
+	<script>
+		import { setStation } from '../scripts/radio';
+		import { STATIONS } from '../config';
+		document.addEventListener('click', (e) => {
+			const btn = (e.target as HTMLElement).closest('[data-station]') as HTMLElement | null;
+			if (!btn) return;
+			const st = STATIONS.find((s) => s.id === btn.dataset.station);
+			if (st) {
+				e.preventDefault();
+				setStation(st, true);
+			}
+		});
+	</script>
+</html>
+
+<style is:global>
+	main {
+		min-height: 70vh;
+		padding-bottom: 120px; /* room for the player bar */
+	}
+</style>

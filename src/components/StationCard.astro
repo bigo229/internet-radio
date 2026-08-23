@@ -1,0 +1,98 @@
+---
+import type { Station } from '../config';
+
+interface Props {
+	station: Station;
+}
+const { station } = Astro.props;
+---
+
+<article class="station-card" style={`--accent:${station.accent}`}>
+	<div class="sc-top">
+		<span class="sc-live"><span class="sc-dot"></span> LIVE</span>
+		<span class="sc-genre">{station.genre}</span>
+	</div>
+	<h3 class="sc-name">{station.name}</h3>
+	<p class="sc-desc muted">{station.description}</p>
+	<div class="sc-actions">
+		<button class="btn primary" data-station={station.id}>
+			<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+				<path d="M8 5v14l11-7z" />
+			</svg>
+			Listen
+		</button>
+		<a class="btn ghost" href={`/stations/${station.id}`}>Open</a>
+	</div>
+</article>
+
+<style>
+	.station-card {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		padding: 22px;
+		border-radius: var(--radius);
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-top: 3px solid var(--accent);
+		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: blur(14px);
+		box-shadow: var(--shadow);
+		transition:
+			transform 0.18s ease,
+			border-color 0.2s ease;
+	}
+	.station-card:hover {
+		transform: translateY(-4px);
+		border-color: var(--accent);
+	}
+	.sc-top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 8px;
+	}
+	.sc-live {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 0.68rem;
+		letter-spacing: 0.14em;
+		font-weight: 700;
+		color: var(--accent);
+	}
+	.sc-dot {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+		animation: scpulse 1.8s ease-in-out infinite;
+	}
+	@keyframes scpulse {
+		50% {
+			box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 0%, transparent);
+		}
+	}
+	.sc-genre {
+		font-size: 0.76rem;
+		color: var(--muted);
+	}
+	.sc-name {
+		font-size: 1.4rem;
+	}
+	.sc-desc {
+		font-size: 0.9rem;
+		line-height: 1.5;
+		flex: 1;
+	}
+	.sc-actions {
+		display: flex;
+		gap: 10px;
+		margin-top: 4px;
+	}
+	.sc-actions .btn {
+		flex: 1;
+		justify-content: center;
+	}
+</style>

@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import StationCard from '../../components/StationCard.astro';
+import { SITE, STATIONS } from '../../config';
+---
+
+<Layout title="Stations" description={`All ${SITE.name} streams in one place.`}>
+	<section class="section">
+		<div class="container">
+			<div class="stations-hero">
+				<span class="eyebrow"><span class="dot"></span> {STATIONS.length} Streams</span>
+				<h1 class="page-title">Pick your <span class="gradient-text">vibe</span></h1>
+				<p class="muted lead">
+					Six always-on AzuraCast streams. Tap a station to listen, or open it to see what's
+					playing, the song history and request a track.
+				</p>
+			</div>
+
+			<div class="stations-grid">
+				{STATIONS.map((s) => <StationCard station={s} />)}
+			</div>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.stations-hero {
+		margin-bottom: 32px;
+	}
+	.page-title {
+		font-size: clamp(2rem, 6vw, 3.4rem);
+		margin: 12px 0 10px;
+	}
+	.lead {
+		font-size: 1.05rem;
+		line-height: 1.6;
+		max-width: 620px;
+	}
+	.stations-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+		gap: 18px;
+	}
+</style>

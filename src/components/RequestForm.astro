@@ -1,0 +1,177 @@
+---
+import type { Station } from '../config';
+
+interface Props {
+	station: Station;
+}
+const { station } = Astro.props;
+---
+
+<section class="request-ac card" data-station-id={station.id} style={`--accent:${station.accent}`}>
+	<div class="rc-head">
+		<h3>Request a Song</h3>
+		<p class="muted">Search {station.name}'s library and send a request to the DJ.</p>
+	</div>
+
+	<form class="rc-search">
+		<input class="rc-q" type="search" placeholder="Search songs or artists…" autocomplete="off" />
+		<button class="btn primary rc-search-btn" type="submit">Search</button>
+	</form>
+
+	<ul class="rc-results">
+		<li class="rc-empty">Search to see requestable songs.</li>
+	</ul>
+
+	<div class="alert rc-alert" role="status"></div>
+</section>
+
+<script>
+	document.querySelectorAll<HTMLElement>('.request-ac').forEach((root) => {
+		const stationId = root.dataset.stationId || '';
+		const form = root.querySelector('form') as HTMLFormElement;
+		const input = root.querySelector('.rc-q') as HTMLInputElement;
+		const results = root.querySelector('.rc-results') as HTMLUListElement;
+		const alert = root.querySelector('.rc-alert') as HTMLElement;
+
+		const esc = (s: string) =>
+			s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c] as string);
+
+		function showAlert(type: string, msg: string) {
+			alert.className = `alert show ${type}`;
+			alert.textContent = msg;
+		}
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+			const q = input.value.trim();
+			results.innerHTML = '<li class="rc-empty">Searching…</li>';
+			try {
+				const res = await fetch(
+					`/api/station/${stationId}/requests.json?q=${encodeURIComponent(q)}`,
+					{ cache: 'no-store' }
+				);
+				const json = (await res.json()) as { results?: any[] };
+				const items = json.results || [];
+				if (!items.length) {
+					results.innerHTML = '<li class="rc-empty">No songs found.</li>';
+					return;
+				}
+				results.innerHTML = items
+					.map(
+						(it) => `<li class="rc-item">
+						<div class="rc-meta">
+							<span class="rc-title">${esc(it.title)}</span>
+							<span class="rc-artist">${esc(it.artist)}</span>
+						</div>
+						<button class="btn primary rc-req" data-request="${esc(it.request_id)}">Request</button>
+					</li>`
+					)
+					.join('');
+			} catch {
+				results.innerHTML = '<li class="rc-empty">Search failed. Try again.</li>';
+			}
+		});
+
+		results.addEventListener('click', async (e) => {
+			const b = (e.target as HTMLElement).closest('.rc-req') as HTMLButtonElement | null;
+			if (!b) return;
+			const id = b.dataset.request || '';
+			b.disabled = true;
+			b.textContent = 'Sending…';
+			try {
+				const res = await fetch(`/api/station/${stationId}/requests.json`, {
+					method: 'POST',
+					headers: { 'content-type': 'application/json' },
+					body: JSON.stringify({ request_id: id }),
+				});
+				const json = (await res.json()) as { message?: string; error?: string };
+				if (!res.ok || json.error) throw new Error(json.error || 'Request failed.');
+				showAlert('ok', json.message || 'Requested! 🎶');
+				b.textContent = 'Requested';
+			} catch (err) {
+				showAlert('err', err instanceof Error ? err.message : 'Request failed.');
+				b.disabled = false;
+				b.textContent = 'Request';
+			}
+		});
+	});
+</script>
+
+<style is:global>
+	.request-ac {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.rc-head h3 {
+		font-size: 1.2rem;
+	}
+	.rc-head p {
+		margin: 6px 0 0;
+		font-size: 0.9rem;
+	}
+	.rc-search {
+		display: flex;
+		gap: 10px;
+	}
+	.rc-q {
+		flex: 1;
+		padding: 13px 16px;
+		border-radius: var(--radius-sm);
+		background: var(--input-bg);
+		border: 1px solid var(--border);
+		color: var(--text);
+		font: inherit;
+	}
+	.rc-q:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+	.rc-results {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		min-height: 40px;
+	}
+	.rc-item {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 12px 14px;
+		border-radius: var(--radius-sm);
+		background: var(--surface);
+		border: 1px solid var(--border);
+	}
+	.rc-meta {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.rc-title {
+		font-weight: 600;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rc-artist {
+		font-size: 0.82rem;
+		color: var(--muted);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+	.rc-req {
+		flex: none;
+	}
+	.rc-empty {
+		padding: 14px;
+		color: var(--faint);
+		font-size: 0.9rem;
+		text-align: center;
+	}
+</style>

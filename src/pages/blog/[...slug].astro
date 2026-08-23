@@ -1,0 +1,142 @@
+---
+import { getEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { SITE } from '../../config';
+
+const { slug } = Astro.params;
+const post = slug ? await getEntry('blog', slug) : undefined;
+if (!post) return Astro.redirect('/blog');
+
+const { Content } = await render(post);
+const date = post.data.pubDate.toLocaleDateString('en-US', {
+	year: 'numeric',
+	month: 'long',
+	day: 'numeric',
+});
+---
+
+<Layout title={post.data.title} description={post.data.description}>
+	<article class="blog-post container narrow">
+		<a class="back" href="/blog">&larr; All posts</a>
+		<div class="bp-meta">
+			<span>{date}</span>
+			{
+				post.data.tags.map((t) => <span class="bp-tag">{t}</span>)
+			}
+		</div>
+		<h1 class="bp-title gradient-text">{post.data.title}</h1>
+		<p class="bp-author muted">By {post.data.author}</p>
+		<div class="prose">
+			<Content />
+		</div>
+	</article>
+</Layout>
+
+<style>
+	.blog-post {
+		padding-block: 56px 24px;
+	}
+	.back {
+		display: inline-block;
+		font-size: 0.9rem;
+		color: var(--muted);
+		margin-bottom: 22px;
+	}
+	.back:hover {
+		color: var(--text);
+	}
+	.bp-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		font-size: 0.82rem;
+		color: var(--faint);
+	}
+	.bp-tag {
+		font-size: 0.7rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent-3);
+		padding: 3px 9px;
+		border-radius: 999px;
+		border: 1px solid var(--border);
+	}
+	.bp-title {
+		font-size: clamp(2rem, 6vw, 3.2rem);
+		margin: 10px 0 6px;
+	}
+	.bp-author {
+		font-size: 0.95rem;
+		margin-bottom: 28px;
+	}
+	.narrow {
+		max-width: 760px;
+	}
+</style>
+
+<style is:global>
+	.prose {
+		line-height: 1.75;
+		font-size: 1.05rem;
+		color: var(--text);
+	}
+	.prose h2 {
+		font-size: 1.6rem;
+		margin: 36px 0 14px;
+	}
+	.prose h3 {
+		font-size: 1.3rem;
+		margin: 28px 0 12px;
+	}
+	.prose p {
+		margin: 16px 0;
+	}
+	.prose ul,
+	.prose ol {
+		margin: 16px 0;
+		padding-left: 22px;
+	}
+	.prose li {
+		margin: 8px 0;
+	}
+	.prose a {
+		color: var(--accent-3);
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
+	.prose blockquote {
+		margin: 22px 0;
+		padding: 14px 20px;
+		border-left: 3px solid var(--accent);
+		background: var(--surface);
+		border-radius: var(--radius-sm);
+		color: var(--muted);
+	}
+	.prose code {
+		font-family: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
+		font-size: 0.9em;
+		background: var(--surface-2);
+		padding: 2px 6px;
+		border-radius: 6px;
+	}
+	.prose pre {
+		background: rgba(0, 0, 0, 0.35);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-sm);
+		padding: 16px;
+		overflow-x: auto;
+		margin: 20px 0;
+	}
+	.prose pre code {
+		background: transparent;
+		padding: 0;
+	}
+	.prose img {
+		border-radius: var(--radius-sm);
+		margin: 20px 0;
+	}
+	:root[data-theme='light' i] .prose pre {
+		background: rgba(17, 12, 40, 0.06);
+	}
+</style>
