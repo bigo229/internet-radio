@@ -13,6 +13,8 @@ export interface Station {
 	apiKey?: string;
 	/** Theme accent colour (hex) */
 	accent: string;
+	requestUrl: string;
+
 }
 
 /**
@@ -52,6 +54,7 @@ export const STATIONS: Station[] = [
 		azuraStation: 'rock',
 		streamUrl: 'https://azuracast3.example.com/listen/rock/radio.mp3',
 		accent: '#f59e0b',
+		requestUrl: 'https://cheapshoutcast365.co.uk',
 	},
 	{
 		id: 'jazz',
