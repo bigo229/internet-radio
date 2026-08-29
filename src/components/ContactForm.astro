@@ -1,0 +1,81 @@
+---
+// src/components/ContactForm.astro
+import { SITE } from '../config';
+---
+
+<section class="contact-section card">
+	<div class="contact-head">
+		<h2>Get in Touch</h2>
+		<p class="muted">Have feedback, partition inquiries or questions? Send us a message.</p>
+	</div>
+
+	<!-- 🟢 NATIVE SUBMISSION: Submits directly to your new public Formspree ID -->
+	<form action="https://formspree.io" method="POST" id="contact-form">
+		<div class="form-group">
+			<label for="contact-name">Your Name</label>
+			<input type="text" name="name" id="contact-name" placeholder="John Doe" required />
+		</div>
+
+		<div class="form-group">
+			<label for="contact-email">Email Address</label>
+			<input type="email" name="email" id="contact-email" placeholder="john@example.com" required />
+		</div>
+
+		<div class="form-group">
+			<label for="contact-message">Message</label>
+			<textarea name="message" id="contact-message" rows="5" placeholder="Type your message here…" required></textarea>
+		</div>
+
+		<!-- 🔑 THE REDIRECT: Formspree reads this to automatically redirect the user to your thanks page -->
+		<input type="hidden" name="_next" value="https://pulseradio.fm" />
+		<input type="hidden" name="_subject" value={`New Message from ${SITE.name}!`} />
+
+		<button type="submit" class="btn primary" id="contact-submit-btn">Send Message</button>
+	</form>
+</section>
+
+<style>
+	.contact-section {
+		display: flex;
+		flex-direction: column;
+		gap: 24px;
+		padding: 34px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		max-width: 600px;
+		margin: 0 auto;
+	}
+	.contact-head h2 {
+		font-size: 1.8rem;
+		margin-bottom: 6px;
+	}
+	form {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+	}
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	label {
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: var(--text);
+	}
+	input, textarea {
+		padding: 12px 14px;
+		border-radius: var(--radius-sm);
+		background: var(--input-bg);
+		border: 1px solid var(--border);
+		color: var(--text);
+		font: inherit;
+	}
+	input:focus, textarea:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+	}
+</style>
