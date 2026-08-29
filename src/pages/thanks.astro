@@ -4,11 +4,133 @@ import Layout from '../layouts/Layout.astro';
 ---
 
 <Layout>
-  <main class="container" style="padding-block: 80px; text-align: center;">
-    <h1>🎉 Message Received!</h1>
-    <p class="muted" style="margin-block: 16px 24px;">
-      Thank you for reaching out. We will read your note and get back to you shortly.
-    </p>
-    <a href="/" class="btn primary">Back to Homepage</a>
+  <main class="thanks-container">
+    
+    <!-- 🟢 THE BOX: Contains the green success circle, white checkmark, and header text -->
+    <div class="thanks-box card">
+      <div class="success-icon-wrapper">
+        <div class="success-circle">
+          <svg xmlns="http://w3.org" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="checkmark">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+          </svg>
+        </div>
+      </div>
+      <h1 class="thanks-title">Message Received!</h1>
+    </div>
+
+    <!-- 💬 OUTSIDE THE BOX: Contains your thank-you text and the redirect button -->
+    <div class="thanks-footer">
+      <p class="muted" style="margin-block: 16px 24px;">
+        Thank you for reaching out. We will read your note and get back to you shortly.
+      </p>
+      <div class="button-wrapper">
+        <a href="/" class="btn primary btn-large">Back to Homepage</a>
+      </div>
+    </div>
+
   </main>
 </Layout>
+
+<style>
+  .thanks-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 24px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* Core Card Container Box */
+  .thanks-box {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 32px;
+    background: var(--surface, #1e1e2e); /* High-quality modern surface dark theme fallback */
+    border: 1px solid var(--border, #2e2e3e);
+    border-radius: var(--radius-lg, 12px);
+    box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.15);
+    text-align: center;
+  }
+
+  /* Green Circle & Crisp White Tick Positioning */
+  .success-icon-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .success-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background-color: #10b981; /* Modern premium emerald green */
+    color: #ffffff; /* Clean white tick matching your design request */
+    border-radius: 50%;
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.15);
+    animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  .checkmark {
+    width: 34px;
+    height: 34px;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: drawCheck 0.3s 0.2s ease-out forwards;
+  }
+
+  .thanks-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text, #ffffff);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  /* Content explicitly styled outside the core box container */
+  .thanks-footer {
+    width: 100%;
+    text-align: center;
+  }
+
+  .thanks-footer p {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--muted, #a0a0b0);
+  }
+
+  .button-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-large {
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    border-radius: var(--radius-md, 6px);
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .btn-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.3);
+  }
+
+  /* Micro-animations to make it look active & modern */
+  @keyframes scaleIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes drawCheck {
+    0% { stroke-dashoffset: 48; }
+    100% { stroke-dashoffset: 0; }
+  }
+</style>
