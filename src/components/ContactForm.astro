@@ -25,8 +25,6 @@ import { SITE } from '../config';
 			<textarea name="message" id="contact-message" rows="5" placeholder="Type your message here…" required></textarea>
 		</div>
 
-		<!-- 🔑 THE REDIRECTION FIX: Formspree requires this parameter to grant our browser script authorization to handle the redirect -->
-		<input type="hidden" name="_next" value="https://pulseradio.fm" />
 		<input type="hidden" name="_subject" value={`New Message from ${SITE.name}!`} />
 
 		<button type="submit" class="btn primary" id="contact-submit-btn">Send Message</button>
@@ -55,8 +53,8 @@ import { SITE } from '../config';
 				}
 
 				try {
-					const formId = "\x6d\x70\x70\x7a\x7a\x6b\x6c\x72";
-					const formspreeUrl = "https://formspree.io" + formId;
+					// 🔑 FIXED: Absolute destination path mapping avoids all template or array parsing glitches
+					const formspreeUrl = "https://formspree.io/f/mppzzklr";
 					
 					const formData = new FormData(form);
 					const urlEncodedData = new URLSearchParams(formData);
@@ -79,12 +77,12 @@ import { SITE } from '../config';
 					if (response.ok || responseData.ok === true) {
 						form.reset();
 						
-						// 🟢 OPTION B RESTORED: Shows confirmation text, then redirects after 2 seconds
 						if (alert) {
 							alert.className = 'alert show ok';
 							alert.textContent = 'Message sent successfully! Redirecting... ✉️';
 						}
 						
+						// 🟢 THE SMOOTH DELAY: Holds the success text for 2 seconds before redirecting
 						setTimeout(() => {
 							window.location.href = "/thanks";
 						}, 2000);
