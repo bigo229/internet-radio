@@ -1,3 +1,5 @@
+// src/config.ts
+
 export interface Station {
 	id: string;
 	name: string;
@@ -9,20 +11,17 @@ export interface Station {
 	azuraStation: string;
 	/** Direct audio stream URL for the <audio> element */
 	streamUrl: string;
-	/** Optional AzuraCast API key (required for song requests) */
-	apiKey?: string;
+	/** 🟢 NEW: Direct public link to each station's request dashboard */
+	requestUrl: string; 
 	/** Theme accent colour (hex) */
 	accent: string;
-	requestUrl: string;
-
 }
 
 /**
  * The six AzuraCast streams shown on the site.
  *
- * Fill in `azuraBase`, `azuraStation`, `streamUrl` and (for song requests)
- * `apiKey` for each real AzuraCast installation. Until then the UI falls back
- * to demo data so the site stays alive.
+ * Fill in `azuraBase`, `azuraStation`, `streamUrl` and `requestUrl`
+ * for each real AzuraCast installation.
  */
 export const STATIONS: Station[] = [
 	{
@@ -34,6 +33,7 @@ export const STATIONS: Station[] = [
 		azuraStation: 'chill',
 		streamUrl: 'https://azuracast1.example.com/listen/chill/radio.mp3',
 		accent: '#8b5cf6',
+		requestUrl: 'https://example.com',
 	},
 	{
 		id: 'house',
@@ -44,17 +44,19 @@ export const STATIONS: Station[] = [
 		azuraStation: 'house',
 		streamUrl: 'https://azuracast2.example.com/listen/house/radio.mp3',
 		accent: '#ec4899',
+		requestUrl: 'https://example.com',
 	},
 	{
 		id: 'rock',
 		name: 'Pulse Rock',
 		genre: 'Indie & Alt Rock',
 		description: 'Guitars, hooks and a little attitude.',
-		azuraBase: 'https://azuracast3.example.com',
-		azuraStation: 'rock',
-		streamUrl: 'https://azuracast3.example.com/listen/rock/radio.mp3',
+		azuraBase: 'https://cheapshoutcast365.co.uk',
+		azuraStation: '5',
+		streamUrl: 'https://cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3',
 		accent: '#f59e0b',
-		requestUrl: 'https://cheapshoutcast365.co.uk',
+		// 🔑 SECURED PUBLIC LINK: Embedded cleanly without any API key risks!
+		requestUrl: 'https://cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed-requests', 
 	},
 	{
 		id: 'jazz',
@@ -65,6 +67,7 @@ export const STATIONS: Station[] = [
 		azuraStation: 'jazz',
 		streamUrl: 'https://azuracast4.example.com/listen/jazz/radio.mp3',
 		accent: '#22d3ee',
+		requestUrl: 'https://example.com',
 	},
 	{
 		id: 'retro',
@@ -75,6 +78,7 @@ export const STATIONS: Station[] = [
 		azuraStation: 'retro',
 		streamUrl: 'https://azuracast5.example.com/listen/retro/radio.mp3',
 		accent: '#34d399',
+		requestUrl: 'https://example.com',
 	},
 	{
 		id: 'techno',
@@ -85,6 +89,7 @@ export const STATIONS: Station[] = [
 		azuraStation: 'techno',
 		streamUrl: 'https://azuracast6.example.com/listen/techno/radio.mp3',
 		accent: '#f43f5e',
+		requestUrl: 'https://example.com',
 	},
 ];
 
