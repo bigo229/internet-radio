@@ -72,9 +72,22 @@ const pageDesc = description ?? SITE.description;
 	</script>
 </html>
 
+<!-- src/layouts/Layout.astro (Replace the style block at the very bottom) -->
+
 <style is:global>
 	main {
 		min-height: 70vh;
-		padding-bottom: 120px; /* room for the player bar */
+	}
+
+	/* 🟢 THE FOOTER INTERCEPT: Reserves a padding barrier block at the base of the viewport */
+	body {
+		padding-bottom: 110px !important; /* Injects clean empty space matching the height of the PlayerBar */
+	}
+
+	/* Keep the footer elements layered naturally on top of the background layout flows */
+	footer {
+		position: relative;
+		z-index: 10;
 	}
 </style>
+
