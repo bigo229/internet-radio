@@ -1,4 +1,5 @@
 ---
+// src/pages/contact.astro
 import Layout from '../layouts/Layout.astro';
 import { SITE } from '../config';
 ---
@@ -14,7 +15,8 @@ import { SITE } from '../config';
 			</p>
 
 			<div class="contact-grid">
-				<form class="card form" id="contact-form" novalidate>
+				<!-- 🟢 NATIVE FORM SUBMISSION: Posts straight to Formspree, skipping the broken API file entirely -->
+				<form class="card form" id="contact-form" action="https://formspree.io" method="POST">
 					<div class="row">
 						<div class="field">
 							<label for="name">Name *</label>
@@ -42,8 +44,11 @@ import { SITE } from '../config';
 						<textarea id="message" name="message" placeholder="Tell us more…" required></textarea>
 					</div>
 
+					<!-- 🔑 AUTOMATED REDIRECTS: Formspree reads these to seamlessly forward users to your confirmation screen -->
+					<input type="hidden" name="_next" value="https://pulseradio.fm" />
+					<input type="hidden" name="_subject" value={`New Message from ${SITE.name}!`} />
+
 					<button class="btn primary" type="submit" id="submit-btn">Send Message</button>
-					<div class="alert" id="alert" role="status"></div>
 				</form>
 
 				<aside class="card info">
@@ -72,52 +77,7 @@ import { SITE } from '../config';
 	</section>
 </Layout>
 
-<script>
-	const form = document.getElementById('contact-form') as HTMLFormElement | null;
-	const alert = document.getElementById('alert');
-	const btn = document.getElementById('submit-btn') as HTMLButtonElement | null;
-
-	form?.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		if (!form.reportValidity()) return;
-
-		const data = Object.fromEntries(new FormData(form).entries());
-		if (alert) {
-			alert.className = 'alert';
-			alert.textContent = '';
-		}
-		if (btn) {
-			btn.disabled = true;
-			btn.textContent = 'Sending…';
-		}
-
-		try {
-			const res = await fetch('/api/contact.json', {
-				method: 'POST',
-				headers: { 'content-type': 'application/json' },
-				body: JSON.stringify(data),
-			});
-			const json = await res.json();
-			if (!res.ok || json.error) throw new Error(json.error || 'Something went wrong');
-
-			if (alert) {
-				alert.className = 'alert show ok';
-				alert.textContent = "Message sent! We'll be in touch soon.";
-			}
-			form.reset();
-		} catch (err) {
-			if (alert) {
-				alert.className = 'alert show err';
-				alert.textContent = err instanceof Error ? err.message : 'Message failed.';
-			}
-		} finally {
-			if (btn) {
-				btn.disabled = false;
-				btn.textContent = 'Send Message';
-			}
-		}
-	});
-</script>
+<!-- 🔴 BROKEN JAVASCRIPT FETCH COMPLETELY REMOVED FROM THIS BLOCK -->
 
 <style>
 	.narrow {
