@@ -1,12 +1,10 @@
 ---
-// src/pages/stations/[id].astro
+// src/pages/stations/[id].astro (Replace lines 1 to 21 completely)
 import Layout from '../../layouts/Layout.astro';
 import NowPlaying from '../../components/NowPlaying.astro';
 import SongHistory from '../../components/SongHistory.astro';
 import { STATIONS } from '../../config';
 
-// 🔑 THE PRODUCTION 500 RESOLUTION: Instructs Cloudflare's serverless router 
-// to generate these dynamic paths as clean static layouts during compilation.
 export const prerender = true;
 
 export function getStaticPaths() {
@@ -18,10 +16,9 @@ export function getStaticPaths() {
 
 const { station } = Astro.props;
 
-// Route directly to the public AzuraCast endpoint safely
+// 🔑 THE DATA LOOKUP FIX: Targets the explicit public parameter endpoint structure
 const publicHistoryEndpoint = `${station.azuraBase}/api/nowplaying/${encodeURIComponent(station.azuraStation)}`;
 ---
-
 
 <Layout title={station.name} description={station.description}>
 	<section class="section">
