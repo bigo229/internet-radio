@@ -34,7 +34,6 @@ const {
 </section>
 
 <script>
-	<script>
 	function escapeHtml(s: string): string {
 		return s.replace(
 			/[&<>"']/g,
@@ -50,7 +49,6 @@ const {
 		}
 		list.innerHTML = items
 			.map((h, i) => {
-				// 🟢 HIGH PRECISION PARSING: Safe navigation extracts AzuraCast's sub-object parameters
 				const title = h.song?.title || h.title || 'Unknown Track';
 				const artist = h.song?.artist || h.artist || 'Unknown Artist';
 				const coverArt = h.song?.art || h.song?.artwork || h.artwork || '/images/default-cover.jpg';
@@ -85,7 +83,6 @@ const {
 			if (!res.ok) return;
 			const json = await res.json();
 			
-			// 🟢 TARGET AZURACAST STRUCTURE: Pulls directly from the native live 'song_history' object feed array
 			let historyItems = [];
 			if (json && json.song_history) {
 				historyItems = json.song_history;
@@ -143,7 +140,6 @@ const {
 	.song-history.compact .sh-list {
 		max-height: 320px;
 	}
-	/* 🟢 FIXED: Expanded column matrix grid schema to accommodate the artwork layout cell neatly */
 	.sh-row {
 		display: grid;
 		grid-template-columns: 56px 18px 40px 1fr;
@@ -174,7 +170,6 @@ const {
 		border-radius: 3px;
 		background: var(--accent-2);
 	}
-	/* 🟢 NEW: Clean thumbnail image presentation frame box */
 	.sh-thumb-box {
 		width: 40px;
 		height: 40px;
