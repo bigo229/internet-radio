@@ -4,14 +4,7 @@ import { SITE, STATIONS } from '../config';
 
 <div class="player-bar" id="player-bar">
 	<div class="pb-left">
-			<div class="pb-left">
 		<div class="pb-art" aria-hidden="true">
-			<!-- 🟢 NEW: Live track artwork image element -->
-			<img src="/images/default-cover.jpg" id="pb-art-img" alt="Album Art" style="width: 100%; height: 100%; border-radius: 10px; object-fit: cover; display: none;" />
-			<span class="eq playing" id="pb-eq"><i></i><i></i><i></i><i></i><i></i></span>
-		</div>
-        <!-- ... rest of pb-meta remains identical ... -->
-
 			<span class="eq playing" id="pb-eq"><i></i><i></i><i></i><i></i><i></i></span>
 		</div>
 		<div class="pb-meta">
@@ -94,26 +87,16 @@ import { SITE, STATIONS } from '../config';
 		if (st) setStation(st, false);
 	});
 
-		subscribe((s) => {
+	subscribe((s) => {
 		if (trackEl) trackEl.textContent = s.track.title || 'Live Stream';
 		if (artistEl) artistEl.textContent = s.track.artist || '';
-		
-		// 🟢 NEW: Update the live artwork thumbnail container image
-		const artImg = document.getElementById('pb-art-img');
-		if (artImg) {
-			const artworkUrl = s.track.artwork || '/images/default-cover.jpg';
-			artImg.src = artworkUrl;
-			artImg.style.display = 'block';
-			if (eq) eq.style.display = s.playing ? 'none' : 'grid'; // Hide pure bars graphic if image is loaded
-		}
-
 		if (statusEl)
 			statusEl.textContent = s.buffering ? 'BUFFERING' : s.playing ? 'ON AIR' : 'OFFLINE';
 		if (stationsSel && s.station) stationsSel.value = s.station.id;
 		bar?.classList.toggle('is-playing', s.playing);
 		eq?.classList.toggle('playing', s.playing);
 	});
-
+</script>
 
 <style>
 	.player-bar {
