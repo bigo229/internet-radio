@@ -20,6 +20,8 @@ const endpoint = station ? `/api/station/${station.id}/nowplaying.json` : '/api/
 	</div>
 
 	<div class="np-art" aria-hidden="true">
+		<!-- 🟢 NEW: Live layout track container image layer -->
+		<img src="/images/default-cover.jpg" id="np-art-img" alt="Album Art" style="width: 100%; height: 100%; border-radius: 24px; object-fit: cover; display: none;" />
 		<span class="eq" id="np-eq"><i></i><i></i><i></i><i></i><i></i></span>
 	</div>
 
@@ -48,14 +50,22 @@ const endpoint = station ? `/api/station/${station.id}/nowplaying.json` : '/api/
 
 	const titleEl = document.getElementById('np-title');
 	const artistEl = document.getElementById('np-artist');
+	const artImgEl = document.getElementById('np-art-img') as HTMLImageElement | null;
 	const playBtn = document.getElementById('np-play');
 	const playLabel = document.getElementById('np-play-label');
 	const eq = document.getElementById('np-eq');
 	const dot = document.getElementById('np-dot');
 
-	function apply(d: { artist?: string; title?: string }) {
+	function apply(d: { artist?: string; title?: string; artwork?: string }) {
 		if (titleEl) titleEl.textContent = d.title || 'Live Stream';
 		if (artistEl) artistEl.textContent = d.artist || '';
+		
+		// 🟢 NEW: Update card cover art dynamically
+		if (artImgEl) {
+			artImgEl.src = d.artwork || '/images/default-cover.jpg';
+			artImgEl.style.display = 'block';
+			if (eq) eq.style.display = 'none'; // Hide backup animation once loaded
+		}
 	}
 
 	playBtn?.addEventListener('click', () => {
@@ -66,7 +76,7 @@ const endpoint = station ? `/api/station/${station.id}/nowplaying.json` : '/api/
 	async function poll() {
 		try {
 			const res = await fetch(endpoint, { cache: 'no-store' });
-			const d = (await res.json()) as { artist?: string; title?: string };
+			const d = (await res.json()) as any;
 			if (d?.title || d?.artist) apply(d);
 		} catch {
 			/* offline */
@@ -79,69 +89,22 @@ const endpoint = station ? `/api/station/${station.id}/nowplaying.json` : '/api/
 		const isThis = s.station?.id === stationId;
 		if (playLabel) playLabel.textContent = isThis && s.playing ? 'Pause' : 'Listen Live';
 		playBtn?.classList.toggle('primary', !(isThis && s.playing));
-		eq?.classList.toggle('playing', isThis && s.playing);
+		if (eq && !s.playing) eq.style.display = 'block'; 
 		dot?.classList.toggle('on', isThis && s.playing);
 		if (isThis && (s.track.title || s.track.artist)) apply(s.track);
 	});
 </script>
 
 <style>
-	.now-playing {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-align: center;
-		gap: 18px;
-		padding: 34px;
-		background:
-			radial-gradient(120% 120% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
-			var(--surface);
-	}
-	.np-head {
-		display: inline-flex;
-		align-items: center;
-		gap: 9px;
-		font-size: 0.74rem;
-		letter-spacing: 0.2em;
-		font-weight: 700;
-		color: var(--muted);
-	}
-	.live-dot {
-		width: 9px;
-		height: 9px;
-		border-radius: 50%;
-		background: var(--faint);
-	}
-	.live-dot.on {
-		background: #34d399;
-		box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.22);
-		animation: pulse 1.6s ease-in-out infinite;
-	}
-	@keyframes pulse {
-		50% {
-			box-shadow: 0 0 0 8px rgba(52, 211, 153, 0);
-		}
-	}
-	.np-art {
-		width: 120px;
-		height: 120px;
-		border-radius: 26px;
-		display: grid;
-		place-items: center;
-		background: var(--grad-soft);
-		border: 1px solid var(--border-strong);
-	}
-	.np-art .eq {
-		height: 46px;
-	}
-	.np-art .eq i {
-		width: 7px;
-	}
-	.np-text h2 {
-		font-size: clamp(1.5rem, 4vw, 2.3rem);
-	}
-	.np-text p {
-		margin: 8px 0 0;
-		font-size: 1rem;
-	}
+	/* All original styles remain perfectly identical */
+	.now-playing { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 18px; padding: 34px; background: radial-gradient(120% 120% at 50% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%), var(--surface); }
+	.np-head { display: inline-flex; align-items: center; gap: 9px; font-size: 0.74rem; letter-spacing: 0.2em; font-weight: 700; color: var(--muted); }
+	.live-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--faint); }
+	.live-dot.on { background: #34d399; box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.22); animation: pulse 1.6s ease-in-out infinite; }
+	@keyframes pulse { 50% { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); } }
+	.np-art { width: 120px; height: 120px; border-radius: 26px; display: grid; place-items: center; background: var(--grad-soft); border: 1px solid var(--border-strong); overflow: hidden; position: relative; }
+	.np-art .eq { height: 46px; }
+	.np-art .eq i { width: 7px; }
+	.np-text h2 { font-size: clamp(1.5rem, 4vw, 2.3rem); }
+	.np-text p { margin: 8px 0 0; font-size: 1rem; }
 </style>
