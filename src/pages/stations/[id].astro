@@ -13,7 +13,10 @@ export function getStaticPaths() {
 }
 
 const { station } = Astro.props;
-const historyEndpoint = `/api/station/${station.id}/nowplaying.json`;
+
+// 🔑 THE RUNTIME 500 FIX: Route directly to the public AzuraCast endpoint,
+// completely bypassing the broken internal api folder route paths!
+const publicHistoryEndpoint = `${station.azuraBase}/api/nowplaying/${encodeURIComponent(station.azuraStation)}`;
 ---
 
 <Layout title={station.name} description={station.description}>
@@ -25,7 +28,7 @@ const historyEndpoint = `/api/station/${station.id}/nowplaying.json`;
 				<div class="layout-main">
 					<NowPlaying station={station} />
 					
-					<!-- 🟢 REDESIGNED LINK PANEL: Completely removes the old broken interactive form -->
+					<!-- 🟢 ZERO-KEY REDESIGNED PANEL -->
 					<div class="request-panel card" style={`--accent: ${station.accent}`}>
 						<div class="panel-head">
 							<div class="icon-bubble">🎶</div>
@@ -44,7 +47,7 @@ const historyEndpoint = `/api/station/${station.id}/nowplaying.json`;
 
 				<!-- Right Column: Recent Tracks Track Log -->
 				<aside class="layout-side">
-					<SongHistory endpoint={historyEndpoint} limit={10} viewAll={false} />
+					<SongHistory endpoint={publicHistoryEndpoint} limit={10} viewAll={false} />
 				</aside>
 
 			</div>
