@@ -42,7 +42,8 @@ const {
 		);
 	}
 
-	function render(list: HTMLUListElement, items: { artist: string; title: string; at: string }[]) {
+	// 🟢 FIXED: Map dynamic cover thumbnails inside list rows automatically
+	function render(list: HTMLUListElement, items: { artist: string; title: string; at: string; artwork?: string }[]) {
 		if (!items.length) {
 			list.innerHTML = '<li class="sh-empty">No tracks played yet.</li>';
 			return;
@@ -54,9 +55,13 @@ const {
 					minute: '2-digit',
 				});
 				const current = i === 0 ? ' current' : '';
+				const coverArt = t.artwork || '/images/default-cover.jpg';
+				
 				return `<li class="sh-row${current}">
 					<span class="sh-time">${time}</span>
-					<span class="sh-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+					<div class="sh-thumb-box" style="width: 40px; height: 40px; margin-inline: 10px; border-radius: 6px; overflow: hidden; flex: none;">
+						<img src="${coverArt}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;" />
+					</div>
 					<span class="sh-meta">
 						<span class="sh-title">${escapeHtml(t.title)}</span>
 						<span class="sh-artist">${escapeHtml(t.artist)}</span>
@@ -73,24 +78,18 @@ const {
 			const res = await fetch(endpoint, { cache: 'no-store' });
 			if (!res.ok) return;
 			const json = await res.json();
-			// Station endpoint returns { history: [...] } (most-recent first);
-			// the legacy endpoint returns a plain array.
-			const items = Array.isArray(json)
-				? json.slice(-limit).reverse()
-				: (json.history || []).slice(0, limit);
-			render(list, items);
+			
+			// Target the parsed array container variables
+			const historyItems = Array.isArray(json) ? json : json.history || [];
+			render(list, historyItems.slice(0, limit));
 		} catch {
-			/* offline */
+			/* endpoint error handling */
 		}
 	}
 
 	document.querySelectorAll<HTMLUListElement>('.sh-list').forEach((list) => {
 		void loadList(list);
-		if (document.visibilityState === 'visible') {
-			window.setInterval(() => {
-				if (document.visibilityState === 'visible') void loadList(list);
-			}, 25000);
-		}
+		window.setInterval(() => loadList(list), 30000);
 	});
 </script>
 
