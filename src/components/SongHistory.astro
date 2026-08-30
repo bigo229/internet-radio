@@ -74,7 +74,7 @@ const {
 			.join('');
 	}
 
-	async function loadList(list: HTMLUListElement) {
+		async function loadList(list: HTMLUListElement) {
 		const limit = Number(list.dataset.limit) || 20;
 		const endpoint = list.dataset.endpoint || '/api/history.json';
 		try {
@@ -82,8 +82,16 @@ const {
 			if (!res.ok) return;
 			const json = await res.json();
 			
-			// Target the parsed array container variables safely
-			const historyItems = Array.isArray(json) ? json : json.history || [];
+			// 🟢 NATIVE PARSING: Handles direct AzuraCast API feeds as well as nested logs
+			let historyItems = [];
+			if (Array.isArray(json)) {
+				historyItems = json;
+			} else if (json.song_history) {
+				historyItems = json.song_history;
+			} else if (json.history) {
+				historyItems = json.history;
+			}
+			
 			render(list, historyItems.slice(0, limit));
 		} catch {
 			/* endpoint error handling */
