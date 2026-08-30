@@ -49,11 +49,11 @@ export const STATIONS: Station[] = [
 	{
 		id: 'rock',
 		name: 'Pulse Rock',
-		genre: 'Indie & Alt Rock',
-		description: 'Guitars, hooks and a little attitude.',
-		azuraBase: 'https://cheapshoutcast365.co.uk',
+		genre: '70s,80s,90s',
+		description: 'Pop and Rock and a little attitude.',
+		azuraBase: 'https://az1.cheapshoutcast365.co.uk',
 		azuraStation: '5',
-		streamUrl: 'https://cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3',
+		streamUrl: 'https://az1.cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3',
 		accent: '#f59e0b',
 		// 🔑 SECURED PUBLIC LINK: Embedded cleanly without any API key risks!
 		requestUrl: 'https://cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed-requests', 
