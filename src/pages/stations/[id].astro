@@ -1,84 +1,112 @@
 ---
+// src/pages/stations/[id].astro
 import Layout from '../../layouts/Layout.astro';
 import NowPlaying from '../../components/NowPlaying.astro';
 import SongHistory from '../../components/SongHistory.astro';
-import { SITE, STATIONS } from '../../config';
+import { STATIONS } from '../../config';
 
-const { id } = Astro.params;
-const station = STATIONS.find((s) => s.id === id);
-if (!station) return Astro.redirect('/stations');
+export function getStaticPaths() {
+	return STATIONS.map((station) => ({
+		params: { id: station.id },
+		props: { station },
+	}));
+}
+
+const { station } = Astro.props;
+
+// 🔑 FIXED: Points directly to the live public endpoint, completely bypassing 
+// the internal server API routes so it never triggers a 500 error again!
+const publicHistoryEndpoint = `${station.azuraBase}/api/nowplaying/${encodeURIComponent(station.azuraStation)}`;
 ---
 
-<Layout title={`${station.name} — Now Playing`} description={`Listen to ${station.name} on ${SITE.name}.`}>
-	<section class="station-hero" style={`--accent:${station.accent}`}>
-		<span class="eyebrow"><span class="dot"></span> {station.genre}</span>
-		<h1 class="sh-title gradient-text">{station.name}</h1>
-		<p class="muted">{station.description}</p>
-		<div class="sh-actions">
-			<button class="btn primary" data-station={station.id}>
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-					<path d="M8 5v14l11-7z" />
-				</svg>
-				Listen Live
-			</button>
-			<a class="btn" href="/stations">All Stations</a>
-		</div>
-	</section>
-
+<Layout title={station.name} description={station.description}>
 	<section class="section">
-		<div class="container station-grid">
-			<NowPlaying station={station} />
-			<div class="side">
-				<SongHistory
-					endpoint={`/api/station/${station.id}/nowplaying.json`}
-					title="Recently Played"
-					limit={14}
-					viewAll={false}
-				/>
+		<div class="container">
+			<div class="station-layout">
+				
+				<!-- Left Column: Live Player Details -->
+				<div class="layout-main">
+					<NowPlaying station={station} />
+					
+					<!-- 🟢 REDESIGNED PANEL -->
+					<div class="request-panel card" style={`--accent: ${station.accent}`}>
+						<div class="panel-head">
+							<div class="icon-bubble">🎶</div>
+							<h2>Song Requests</h2>
+						</div>
+						<p class="muted">
+							Want to hear your favourite track? Launch our dedicated public requests dashboard to search the active {station.name} library and send your choice straight into the automation queue.
+						</p>
+						<div class="action-wrapper">
+							<a href={station.requestUrl} target="_blank" rel="noopener noreferrer" class="btn primary btn-large">
+								Open Request System
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Column: Recent Tracks Track Log -->
+				<aside class="layout-side">
+					<SongHistory endpoint={publicHistoryEndpoint} limit={10} viewAll={false} />
+				</aside>
+
 			</div>
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="container narrow">
-			<RequestForm station={station} />
 		</div>
 	</section>
 </Layout>
 
 <style>
-	.station-hero {
-		padding: 72px 0 8px;
-	}
-	.sh-title {
-		font-size: clamp(2.2rem, 7vw, 4rem);
-		margin: 12px 0 8px;
-	}
-	.station-hero p {
-		font-size: 1.05rem;
-		max-width: 560px;
-	}
-	.sh-actions {
-		display: flex;
-		gap: 12px;
-		flex-wrap: wrap;
-		margin-top: 18px;
-	}
-	.station-grid {
+	.station-layout {
 		display: grid;
 		grid-template-columns: 1.4fr 1fr;
-		gap: 22px;
-		align-items: stretch;
+		gap: 32px;
+		align-items: start;
 	}
-	.side {
+	.layout-main {
 		display: flex;
 		flex-direction: column;
+		gap: 24px;
 	}
-	.narrow {
-		max-width: 760px;
+	.request-panel {
+		padding: 32px;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		border-radius: var(--radius-lg);
+		text-align: center;
+	}
+	.panel-head {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+	.icon-bubble {
+		font-size: 2rem;
+		width: 64px;
+		height: 64px;
+		background: color-mix(in srgb, var(--accent) 12%, transparent);
+		border-radius: 50%;
+		display: grid;
+		place-items: center;
+	}
+	.request-panel h2 {
+		font-size: 1.6rem;
+		margin: 0;
+	}
+	.request-panel p {
+		font-size: 0.98rem;
+		line-height: 1.6;
+		margin-bottom: 24px;
+	}
+	.btn-large {
+		padding: 12px 32px;
+		display: inline-block;
+		font-weight: 600;
+		text-decoration: none;
 	}
 	@media (max-width: 860px) {
-		.station-grid {
+		.station-layout {
 			grid-template-columns: 1fr;
 		}
 	}
