@@ -56,7 +56,7 @@ export const STATIONS: Station[] = [
 		streamUrl: 'https://az1.cheapshoutcast365.co.uk/listen/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/radio.mp3',
 		accent: '#f59e0b',
 		// 🔑 SECURED PUBLIC LINK: Embedded cleanly without any API key risks!
-		requestUrl: 'https://cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed-requests', 
+		requestUrl: 'https://az1.cheapshoutcast365.co.uk/public/cheapshoutcast365_radio-70s,80s,90s,00s_v2_8040/embed-requests', 
 	},
 	{
 		id: 'jazz',
