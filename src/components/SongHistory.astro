@@ -55,12 +55,15 @@ const {
 					minute: '2-digit',
 				});
 				const current = i === 0 ? ' current' : '';
+				
+				// 🛡️ FALLBACK GUARD: Reverts cleanly to default-cover if data maps blank
 				const coverArt = t.artwork || '/images/default-cover.jpg';
 				
 				return `<li class="sh-row${current}">
 					<span class="sh-time">${time}</span>
-					<div class="sh-thumb-box" style="width: 40px; height: 40px; margin-inline: 10px; border-radius: 6px; overflow: hidden; flex: none;">
-						<img src="${coverArt}" alt="Cover" style="width: 100%; height: 100%; object-fit: cover;" />
+					<span class="sh-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+					<div class="sh-thumb-box">
+						<img src="${coverArt}" alt="Cover" />
 					</div>
 					<span class="sh-meta">
 						<span class="sh-title">${escapeHtml(t.title)}</span>
@@ -79,7 +82,7 @@ const {
 			if (!res.ok) return;
 			const json = await res.json();
 			
-			// Target the parsed array container variables
+			// Target the parsed array container variables safely
 			const historyItems = Array.isArray(json) ? json : json.history || [];
 			render(list, historyItems.slice(0, limit));
 		} catch {
@@ -129,9 +132,10 @@ const {
 	.song-history.compact .sh-list {
 		max-height: 320px;
 	}
+	/* 🟢 FIXED: Expanded column matrix grid schema to accommodate the artwork layout cell neatly */
 	.sh-row {
 		display: grid;
-		grid-template-columns: 56px 18px 1fr;
+		grid-template-columns: 56px 18px 40px 1fr;
 		align-items: center;
 		gap: 12px;
 		padding: 10px 12px;
@@ -158,6 +162,21 @@ const {
 		height: 30%;
 		border-radius: 3px;
 		background: var(--accent-2);
+	}
+	/* 🟢 NEW: Clean thumbnail image presentation frame box */
+	.sh-thumb-box {
+		width: 40px;
+		height: 40px;
+		border-radius: 6px;
+		overflow: hidden;
+		background: var(--grad-soft);
+		border: 1px solid var(--border);
+		display: block;
+	}
+	.sh-thumb-box img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 	.sh-meta {
 		display: flex;
