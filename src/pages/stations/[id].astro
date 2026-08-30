@@ -5,6 +5,10 @@ import NowPlaying from '../../components/NowPlaying.astro';
 import SongHistory from '../../components/SongHistory.astro';
 import { STATIONS } from '../../config';
 
+// 🔑 THE PRODUCTION 500 RESOLUTION: Instructs Cloudflare's serverless router 
+// to generate these dynamic paths as clean static layouts during compilation.
+export const prerender = true;
+
 export function getStaticPaths() {
 	return STATIONS.map((station) => ({
 		params: { id: station.id },
@@ -14,10 +18,10 @@ export function getStaticPaths() {
 
 const { station } = Astro.props;
 
-// 🔑 FIXED: Points directly to the live public endpoint, completely bypassing 
-// the internal server API routes so it never triggers a 500 error again!
+// Route directly to the public AzuraCast endpoint safely
 const publicHistoryEndpoint = `${station.azuraBase}/api/nowplaying/${encodeURIComponent(station.azuraStation)}`;
 ---
+
 
 <Layout title={station.name} description={station.description}>
 	<section class="section">
