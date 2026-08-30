@@ -1,9 +1,7 @@
 ---
+// src/pages/request.astro
 import Layout from '../layouts/Layout.astro';
-import RequestForm from '../components/RequestForm.astro';
-import { SITE, STATIONS } from '../config';
-
-const first = STATIONS[0];
+import { STATIONS } from '../config';
 ---
 
 <Layout title="Request a Song" description="Request a track on one of our AzuraCast stations.">
@@ -12,25 +10,21 @@ const first = STATIONS[0];
 			<span class="eyebrow"><span class="dot"></span> Song Requests</span>
 			<h1 class="page-title">Request a <span class="gradient-text">track</span></h1>
 			<p class="muted lead">
-				Pick a station, search its library and send a request straight to that stream's DJ.
+				Select a stream below to launch its dedicated request dashboard and choose a song.
 			</p>
 
-			<div class="field req-pick">
-				<label for="req-station">Station</label>
-				<select id="req-station">
-					{
-						STATIONS.map((s) => (
-							<option value={s.id}>{s.name} — {s.genre}</option>
-						))
-					}
-				</select>
-			</div>
-
-			<div class="req-forms">
+			<div class="station-grid">
 				{
 					STATIONS.map((s) => (
-						<div class="req-panel" data-station-id={s.id} style={s.id === first.id ? '' : 'display:none'}>
-							<RequestForm station={s} />
+						<div class="station-card card" style={`--accent:${s.accent}`}>
+							<div class="card-meta">
+								<h3>{s.name}</h3>
+								<span class="genre-tag">{s.genre}</span>
+								<p class="muted">{s.description}</p>
+							</div>
+							<a href={s.requestUrl} target="_blank" rel="noopener noreferrer" class="btn primary btn-full">
+								Open Request System 🎶
+							</a>
 						</div>
 					))
 				}
@@ -39,20 +33,9 @@ const first = STATIONS[0];
 	</section>
 </Layout>
 
-<script>
-	const sel = document.getElementById('req-station');
-	const panels = document.querySelectorAll<HTMLElement>('.req-panel');
-	sel?.addEventListener('change', () => {
-		const value = sel.value;
-		panels.forEach((p) => {
-			p.style.display = p.dataset.stationId === value ? '' : 'none';
-		});
-	});
-</script>
-
 <style>
 	.narrow {
-		max-width: 760px;
+		max-width: 800px;
 	}
 	.page-title {
 		font-size: clamp(2rem, 6vw, 3.2rem);
@@ -61,23 +44,43 @@ const first = STATIONS[0];
 	.lead {
 		font-size: 1.05rem;
 		line-height: 1.6;
-		margin-bottom: 24px;
+		margin-bottom: 32px;
 	}
-	.req-pick {
-		margin-bottom: 22px;
+	.station-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+		gap: 20px;
 	}
-	.req-pick select {
-		width: 100%;
-		padding: 14px 16px;
-		border-radius: var(--radius-sm);
-		background: var(--input-bg);
+	.station-card {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		padding: 24px;
 		border: 1px solid var(--border);
-		color: var(--text);
-		font: inherit;
+		border-radius: var(--radius-md);
+		background: var(--surface);
 	}
-	.req-pick select:focus {
-		outline: none;
-		border-color: var(--accent);
-		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+	.card-meta h3 {
+		font-size: 1.3rem;
+		margin-bottom: 4px;
+	}
+	.genre-tag {
+		display: inline-block;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: var(--accent);
+		margin-bottom: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.card-meta p {
+		font-size: 0.92rem;
+		line-height: 1.5;
+		margin-bottom: 20px;
+	}
+	.btn-full {
+		width: 100%;
+		text-align: center;
+		display: block;
 	}
 </style>
