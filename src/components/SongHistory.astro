@@ -34,6 +34,7 @@ const {
 </section>
 
 <script>
+	<script>
 	function escapeHtml(s: string): string {
 		return s.replace(
 			/[&<>"']/g,
@@ -42,22 +43,24 @@ const {
 		);
 	}
 
-	// 🟢 FIXED: Map dynamic cover thumbnails inside list rows automatically
-	function render(list: HTMLUListElement, items: { artist: string; title: string; at: string; artwork?: string }[]) {
-		if (!items.length) {
+	function render(list: HTMLUListElement, items: any[]) {
+		if (!items || !items.length) {
 			list.innerHTML = '<li class="sh-empty">No tracks played yet.</li>';
 			return;
 		}
 		list.innerHTML = items
-			.map((t, i) => {
-				const time = new Date(t.at).toLocaleTimeString([], {
-					hour: '2-digit',
-					minute: '2-digit',
-				});
-				const current = i === 0 ? ' current' : '';
+			.map((h, i) => {
+				// 🟢 HIGH PRECISION PARSING: Safe navigation extracts AzuraCast's sub-object parameters
+				const title = h.song?.title || h.title || 'Unknown Track';
+				const artist = h.song?.artist || h.artist || 'Unknown Artist';
+				const coverArt = h.song?.art || h.song?.artwork || h.artwork || '/images/default-cover.jpg';
 				
-				// 🛡️ FALLBACK GUARD: Reverts cleanly to default-cover if data maps blank
-				const coverArt = t.artwork || '/images/default-cover.jpg';
+				const playedAt = h.played_at || (h.at ? Math.floor(new Date(h.at).getTime() / 1000) : 0);
+				const time = playedAt 
+					? new Date(playedAt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+					: '--:--';
+
+				const current = i === 0 ? ' current' : '';
 				
 				return `<li class="sh-row${current}">
 					<span class="sh-time">${time}</span>
@@ -66,15 +69,15 @@ const {
 						<img src="${coverArt}" alt="Cover" />
 					</div>
 					<span class="sh-meta">
-						<span class="sh-title">${escapeHtml(t.title)}</span>
-						<span class="sh-artist">${escapeHtml(t.artist)}</span>
+						<span class="sh-title">${escapeHtml(title)}</span>
+						<span class="sh-artist">${escapeHtml(artist)}</span>
 					</span>
 				</li>`;
 			})
 			.join('');
 	}
 
-		async function loadList(list: HTMLUListElement) {
+	async function loadList(list: HTMLUListElement) {
 		const limit = Number(list.dataset.limit) || 20;
 		const endpoint = list.dataset.endpoint || '/api/history.json';
 		try {
@@ -82,19 +85,19 @@ const {
 			if (!res.ok) return;
 			const json = await res.json();
 			
-			// 🟢 NATIVE PARSING: Handles direct AzuraCast API feeds as well as nested logs
+			// 🟢 TARGET AZURACAST STRUCTURE: Pulls directly from the native live 'song_history' object feed array
 			let historyItems = [];
-			if (Array.isArray(json)) {
-				historyItems = json;
-			} else if (json.song_history) {
+			if (json && json.song_history) {
 				historyItems = json.song_history;
-			} else if (json.history) {
+			} else if (json && json.history) {
 				historyItems = json.history;
+			} else if (Array.isArray(json)) {
+				historyItems = json;
 			}
 			
 			render(list, historyItems.slice(0, limit));
 		} catch {
-			/* endpoint error handling */
+			list.innerHTML = '<li class="sh-empty">Failed to load song history.</li>';
 		}
 	}
 
